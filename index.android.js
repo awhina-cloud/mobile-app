@@ -63,8 +63,109 @@ import {
 } from 'react-native';
 import GoogleSignIn from 'react-native-google-sign-in';
 import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
+import FireAuth from 'react-native-firebase-auth';
+import firebase from 'firebase';
+
+// Initialize Firebase
+const config = {
+    apiKey: "AIzaSyCcNYIzJnkRM1EV6-MpPoEzC_noKuyCSnk",
+    authDomain: "my-app-2a4f4.firebaseapp.com",
+    databaseURL: "https://my-app-2a4f4.firebaseio.com",
+    projectId: "my-app-2a4f4",
+    storageBucket: "my-app-2a4f4.appspot.com",
+    messagingSenderId: "214337708418"
+};
 
 export default class MyApp extends Component {
+
+    constructor(props) {
+        super(props);
+        try {
+            firebase.initializeApp(config);
+        } catch (ex) {
+            console.log(ex);
+        }
+
+        try {
+            FireAuth.init({
+                clientID: '214337708418-ln8d7vji3v6k1aciiqno9a4thcjh3ucv.apps.googleusercontent.com',
+                scopes: ['openid', 'email', 'profile'],
+                shouldFetchBasicProfile: true,
+            });
+        } catch (ex) {
+            console.log(ex);
+        }
+    }
+
+    componentDidMount() {
+        FireAuth.setup(this.onLogin, this.onUserChange, this.onLogout, this.emailVerified, this.onError);
+    }
+
+    onLogin = (a, b, c) => {
+        console.log('onLogin', a, b, c);
+    };
+    onUserChange = (a, b, c) => {
+        console.log('onUserChange', a, b, c);
+    };
+    onLogout = (a, b, c) => {
+        console.log('onLogout', a, b, c);
+    };
+    emailVerified = (a, b, c) => {
+        console.log('emailVerified', a, b, c);
+    };
+    onError = (a, b, c) => {
+        console.log('onError', a, b, c);
+    };
+
+    register = () => {
+        const {email, password, firstName, lastName} = this.state;
+        FireAuth.register(email, password, {firstName, lastName});
+    }
+
+    login = () => {
+        FireAuth.login(this.state.email, this.state.password);
+    }
+
+    facebookLogin() {
+        FireAuth.facebookLogin();
+    }
+
+    googleLogin() {
+        console.log('FireAuth.googleLogin();');
+        FireAuth.googleLogin();
+    }
+
+    logout() {
+        FireAuth.logout();
+    }
+
+    update = () => {
+        FireAuth.update({firstName: this.state.firstName, lastName: this.state.lastName}).then(() => {
+            console.log('update');
+        }).catch(err => {
+            console.log('update error');
+        });
+    };
+
+    resetPassword = () => {
+        FireAuth.resetPassword(this.state.email)
+            .then(() => {
+                console.log('reset pw');
+            })
+            .catch(err => {
+                console.log('reset pw error');
+            });
+    };
+
+    updatePassword = () => {
+        FireAuth.updatePassword(this.state.password).then(() => {
+            console.log('update pw');
+        }).catch(err => {
+            console.log('update pw error');
+        });
+    };
+
+
     render() {
         return (
             <View style={styles.container}>
@@ -79,68 +180,26 @@ export default class MyApp extends Component {
                     Shake or press menu button for dev menu
                 </Text>
                 <TouchableHighlight style={styles.google} onPress={async () => {
-                    console.log('A1');
-                    try {
-                        await GoogleSignIn.configure({
-                            clientID: '214337708418-ln8d7vji3v6k1aciiqno9a4thcjh3ucv.apps.googleusercontent.com',
-                            scopes: ['openid', 'email', 'profile'],
-                            shouldFetchBasicProfile: true,
-                        });
-                    } catch (ex) {
-                        console.log('Y1', ex);
-                    }
-
-                    try {
-                        const user = await GoogleSignIn.signInPromise().catch(ex => {
-                            console.log('XX', ex)
-                        });
-                        setTimeout(() => {
-                            alert(JSON.stringify(user, null, '  '));
-                        }, 1500);
-                    } catch (ex) {
-                        console.log('Y2', ex);
-                    }
+                    this.logout();
+                }}>
+                    <Text style={styles.instructions}>
+                        Sign-Out
+                    </Text>
+                </TouchableHighlight>
+                <TouchableHighlight style={styles.google} onPress={async () => {
+                    this.googleLogin();
                 }}>
                     <Text style={styles.instructions}>
                         Google Sign-In
                     </Text>
                 </TouchableHighlight>
-                <FBLogin style={styles.facebook}
-                         ref={(fbLogin) => {
-                             this.fbLogin = fbLogin
-                         }}
-                         permissions={["email", "user_friends"]}
-                         loginBehavior={FBLoginManager.LoginBehaviors.Native}
-                         onLogin={function (data) {
-                             console.log("Logged in!");
-                             console.log(data);
-                             //_this.setState({ user : data.credentials });
-                         }}
-                         onLogout={function () {
-                             console.log("Logged out.");
-                             //_this.setState({ user : null });
-                         }}
-                         onLoginFound={function (data) {
-                             console.log("Existing login found.");
-                             console.log(data);
-                             //_this.setState({ user : data.credentials });
-                         }}
-                         onLoginNotFound={function () {
-                             console.log("No user logged in.");
-                             //_this.setState({ user : null });
-                         }}
-                         onError={function (data) {
-                             console.log("ERROR");
-                             console.log(data);
-                         }}
-                         onCancel={function () {
-                             console.log("User cancelled.");
-                         }}
-                         onPermissionsMissing={function (data) {
-                             console.log("Check permissions!");
-                             console.log(data);
-                         }}
-                />
+                <TouchableHighlight style={styles.google} onPress={async () => {
+                    this.facebookLogin();
+                }}>
+                    <Text style={styles.instructions}>
+                        Facebook Sign-In
+                    </Text>
+                </TouchableHighlight>
             </View>
         );
     }
