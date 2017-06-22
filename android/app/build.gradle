@@ -135,9 +135,10 @@ android {
 dependencies {
     compile project(':react-native-google-sign-in')
     compile project(':react-native-facebook-login')
+    compile project(':react-native-firebase')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.google.android.gms:play-services-auth:10.0.1"
+    compile "com.google.android.gms:play-services-auth:10.2.6"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
 

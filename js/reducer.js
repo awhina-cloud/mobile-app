@@ -10,14 +10,21 @@
 /**
  * Import dependencies.
  */
-import {AppRegistry} from 'react-native';
+import {combineReducers} from 'redux';
 
 /**
  * Import local dependencies.
  */
-import Root from './js/index';
+import appReducer from './containers/App/reducer';
 
 /**
- * Register the app component.
+ * Collect all reducers.
  */
-AppRegistry.registerComponent('Root', () => Root);
+const reducers = {
+    app: appReducer
+};
+
+/**
+ * Export the root reducer.
+ */
+export default combineReducers(reducers);
