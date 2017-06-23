@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
+import {AsyncStorage, StyleSheet, Text, View, TouchableHighlight} from 'react-native';
 import {connect} from 'react-redux';
 
 /**
@@ -23,8 +23,8 @@ import firebase from '../../firebase';
  * Import actions.
  */
 import {appUserLoggedInCreator, appUserLoggedOutCreator} from './actions';
-import LoginScreen from '../LoginScreen/component';
 import HomeScreen from '../HomeScreen/component';
+import LoadingScreen from "../LoadingScreen/component";
 
 /**
  * Create the container.
@@ -37,11 +37,10 @@ class App extends Component {
 
     componentDidMount() {
         this.unsubscribeFirebaseAuthState = firebase.auth().onAuthStateChanged(user => {
+            console.log('-------------------- onAuthStateChanged :', JSON.stringify(user, null, 2));
             if (user) {
-                console.log('!!!!!!!!!', user);
                 this.props.onUserLoggedIn(user);
             } else {
-                console.log('!!!!!!!!! Logged out');
                 this.props.onUserLoggedOut();
             }
         });
@@ -55,10 +54,11 @@ class App extends Component {
 
     render() {
         let {user} = this.props;
+        console.log('render', user);
         if (user) {
             return <HomeScreen/>
         } else {
-            return <LoginScreen/>
+            return <LoadingScreen/>
         }
     }
 }

@@ -13,17 +13,19 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
 import {connect} from 'react-redux';
-import {FBLoginManager} from 'react-native-facebook-login';
-import GoogleSignIn from 'react-native-google-sign-in';
+
+import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 
 /**
  * Import local dependencies.
  */
-import firebase from '../../firebase';
+import FacebookLoginButton from '../../components/FacebookLoginButton';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 /**
  * Import actions.
  */
+import {appUserLogoutCreator, appUserLoginFacebookCreator, appUserLoginGoogleCreator} from '../App/actions';
 
 /**
  * Create the container.
@@ -39,40 +41,24 @@ class HomeScreen extends Component {
     componentWillUnmount() {
     }
 
-    logout = () => {
-        let {user} = this.props;
-        let facebook = user.providerData.find(provider => {
-            console.log('sdfsdfs', provider);
-            return provider.providerId === 'facebook.com';
-        });
-        if (facebook) {
-            console.log('facebook logout');
-            try {
-                FBLoginManager.logout((err, data) => {
-                    console.log('facebook logout', err, data);
-                    if (!err) {
-                        firebase.auth().signOut();
-                    }
-                });
-            } catch (ex) {
-                console.log('facebook logout error', ex);
-            }
-        }
-        //GoogleSignIn.signOutPromise()
-        //firebase.auth().signOut();
-    };
-
     render() {
-        let {user} = this.props;
+        let {onUserLogout, onUserLoginFacebook, onUserLoginGoogle, user} = this.props;
         return (
             <View style={styles.container}>
-                <Text style={styles.welcome}>{`Welcome`}</Text>
+                <Text style={styles.welcome}>{`Home`}</Text>
                 <TouchableHighlight
                     onPress={() => {
-                        this.logout();
+                        onUserLogout();
                     }}>
                     <Text style={{margin: 10}}>{`Logout`}</Text>
                 </TouchableHighlight>
+                <FBLogin
+                    buttonView={<FacebookLoginButton />}
+                    loginBehavior={FBLoginManager.LoginBehaviors.Native}
+                    permissions={["email"]}
+                    onLogin={e => onUserLoginFacebook(e.credentials.token)}
+                />
+                <GoogleLoginButton login={() => onUserLoginGoogle()}/>
                 <Text>{JSON.stringify(user, null, 2)}</Text>
             </View>
         );
@@ -92,7 +78,11 @@ const mapStateToProps = ({app}) => {
  * Map actions to component properties.
  */
 const mapDispatchToProps = (dispatch) => {
-    return {}
+    return {
+        onUserLogout: () => dispatch(appUserLogoutCreator()),
+        onUserLoginFacebook: (token) => dispatch(appUserLoginFacebookCreator(token)),
+        onUserLoginGoogle: () => dispatch(appUserLoginGoogleCreator())
+    }
 };
 
 /**

@@ -89,7 +89,7 @@ export default class LoginScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.welcome}>{`Welcome`}</Text>
+                <Text style={styles.welcome}>{`Login`}</Text>
                 <FBLogin
                     buttonView={<FacebookLoginButton />}
                     loginBehavior={FBLoginManager.LoginBehaviors.Native}

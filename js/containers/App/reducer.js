@@ -14,7 +14,11 @@
 /**
  * Import local dependencies.
  */
-import {APP_USER_LOGGED_IN, APP_USER_LOGGED_OUT} from './actions';
+
+/**
+ * Import actions.
+ */
+import {APP_USER_LOGGED_IN, APP_USER_LOGGED_OUT, APP_FETCH_POSTS} from './actions';
 
 /**
  * Create the initial state.
@@ -27,11 +31,15 @@ const initialState = {
  * Create the reducer.
  */
 const reducer = (state = initialState, action) => {
-    switch (action.type) {
+    console.log('--- ' + action.type + ' ---');
+    let {type, payload} = action;
+    switch (type) {
         case APP_USER_LOGGED_IN:
-            return appUserLoggedIn(state, action.payload);
+            return appUserLoggedIn(state, payload);
         case APP_USER_LOGGED_OUT:
             return appUserLoggedOut(state);
+        case APP_FETCH_POSTS:
+            return appFetchPosts(state, payload);
         default:
             return state;
     }
@@ -49,6 +57,14 @@ function appUserLoggedIn(state, user) {
  */
 function appUserLoggedOut(state) {
     return Object.assign({}, state, {user: null});
+}
+
+/**
+ * User logged out action handler.
+ */
+function appFetchPosts(state, posts) {
+    console.log('POOOOOOOOOOSTS', posts);
+    return state;
 }
 
 /**
