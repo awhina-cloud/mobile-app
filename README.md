@@ -1,3 +1,14 @@
+# Features
+
+- Firebase offline capabilities
+- Firebase realtime database with redux integration
+- Firebase anonymous default user support (use app before logging in, like Trademe app)
+- Facebook login
+- Google login
+- Geolocation support
+- Latest react-native
+- Clean application structure with redux best practices.
+
 # Development
 
 # Prerequisites
@@ -10,9 +21,9 @@ Follow the [Getting Started](https://facebook.github.io/react-native/docs/gettin
 
 # Setup
 
-## Authentication
+## Firebase
 
-Taken from [this repo](https://github.com/SolidStateGroup/react-native-firebase-auth).
+Taken from [this repo](https://github.com/invertase/react-native-firebase).
 
 ## Google Sign-In
 
@@ -30,23 +41,10 @@ Follow [this guide](https://github.com/magus/react-native-facebook-login#setup).
 
 Run `yarn install` to install all dependencies.
 
-## Google Play Services Version
+## Android
 
-- In `android/app/build.gradle` make sure there is
-
-  `compile "com.google.android.gms:play-services-auth:10.0.1"`
-
-- Update `node_modules/react-native-google-sign-in/android/build.gradle` to match the same version
- 
-  `compile "com.google.android.gms:play-services-auth:10.0.1"`
-  
-## Android Build Tools Version
-
-Make sure that the following files all use the correct `buildToolsVersion '25.0.0'`
-
-- `android/app/build.gradle`
-- `node_modules/react-native-facebook-login/android/build.gradle`
-- `node_modules/react-native-google-sign-in/android/build.gradle`
+The `npm postinstall` script should run automatically after the `yarn install` command.
+This will modify the `Build Tool Version` and the `Google Play Services Version` of the native libraries to make the build work.
 
 ## Emulator Compatibility
 
