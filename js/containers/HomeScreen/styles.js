@@ -10,35 +10,12 @@
 /**
  * Import dependencies.
  */
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 /**
- * Import local dependencies.
+ * Export styles.
  */
-
-/**
- * Import actions.
- */
-
-/**
- * Create the container.
- */
-export default class LoadingScreen extends Component {
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.welcome}>{`Loading`}</Text>
-            </View>
-        );
-    }
-}
-
-/**
- * TODO move styles to styles.js
- */
-const styles = StyleSheet.create({
+export default StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',

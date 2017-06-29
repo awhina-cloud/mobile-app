@@ -13,52 +13,62 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
 import {connect} from 'react-redux';
-
-import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
+import {NavigationActions} from 'react-navigation';
 
 /**
  * Import local dependencies.
  */
-import FacebookLoginButton from '../../components/FacebookLoginButton';
-import GoogleLoginButton from '../../components/GoogleLoginButton';
+import styles from './styles';
 
 /**
  * Import actions.
  */
-import {appUserLogoutCreator, appUserLoginFacebookCreator, appUserLoginGoogleCreator} from '../App/actions';
+import {appUserLogoutCreator} from '../../actions';
 
 /**
  * Create the container.
  */
 class HomeScreen extends Component {
+
+    static navigationOptions = {
+        title: 'Home'
+    };
+
     constructor(props) {
         super(props);
-    }
 
-    componentDidMount() {
-    }
-
-    componentWillUnmount() {
+        this.state = {
+            latitude: null,
+            longitude: null,
+            error: null,
+        };
     }
 
     render() {
-        let {onUserLogout, onUserLoginFacebook, onUserLoginGoogle, user} = this.props;
+        let {onUserLogout, onNavigateToLoginScreen, user, location} = this.props;
+        let {latitude, longitude, error} = this.state;
+
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>{`Home`}</Text>
-                <TouchableHighlight
-                    onPress={() => {
-                        onUserLogout();
+                <Text>{JSON.stringify(location, null, 2)} -</Text>
+                {
+                    user && !user.isAnonymous &&
+                    <TouchableHighlight
+                        onPress={() => {
+                            onUserLogout();
+                        }}>
+                        <Text style={{margin: 10}}>{`Logout`}</Text>
+                    </TouchableHighlight>
+                }
+                {
+                    user && user.isAnonymous &&
+                    <TouchableHighlight onPress={() => {
+                        onNavigateToLoginScreen();
                     }}>
-                    <Text style={{margin: 10}}>{`Logout`}</Text>
-                </TouchableHighlight>
-                <FBLogin
-                    buttonView={<FacebookLoginButton />}
-                    loginBehavior={FBLoginManager.LoginBehaviors.Native}
-                    permissions={["email"]}
-                    onLogin={e => onUserLoginFacebook(e.credentials.token)}
-                />
-                <GoogleLoginButton login={() => onUserLoginGoogle()}/>
+                        <Text>Go to Login page</Text>
+                    </TouchableHighlight>
+                }
                 <Text>{JSON.stringify(user, null, 2)}</Text>
             </View>
         );
@@ -70,7 +80,8 @@ class HomeScreen extends Component {
  */
 const mapStateToProps = ({app}) => {
     return {
-        user: app.user
+        user: app.user,
+        location: app.location
     }
 };
 
@@ -80,8 +91,7 @@ const mapStateToProps = ({app}) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onUserLogout: () => dispatch(appUserLogoutCreator()),
-        onUserLoginFacebook: (token) => dispatch(appUserLoginFacebookCreator(token)),
-        onUserLoginGoogle: () => dispatch(appUserLoginGoogleCreator())
+        onNavigateToLoginScreen: () => dispatch(NavigationActions.navigate({routeName: 'Login'}))
     }
 };
 
@@ -92,23 +102,6 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps,
     null, {
-        pure: false
+        pure: false // https://github.com/reactjs/react-redux/blob/master/docs/troubleshooting.md
     }
 )(HomeScreen);
-
-/**
- * TODO move styles to styles.js
- */
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00ff00',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    }
-});

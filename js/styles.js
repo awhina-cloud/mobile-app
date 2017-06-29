@@ -10,17 +10,13 @@
 /**
  * Import dependencies.
  */
-import RNFirebase from 'react-native-firebase';
+import {StyleSheet} from 'react-native';
 
 /**
- * TODO: Switch between development and production.
+ * Export styles.
  */
-const configurationOptions = {
-    debug: true,
-    persistence: true
-};
-
-/**
- * Export the firebase instance.
- */
-export default RNFirebase.initializeApp(configurationOptions);
+export default StyleSheet.create({
+    tabBarStyle: {
+        backgroundColor: '#000000'
+    }
+});
