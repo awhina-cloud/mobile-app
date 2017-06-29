@@ -31,7 +31,9 @@ import {appUserLogoutCreator} from '../../actions';
 class HomeScreen extends Component {
 
     static navigationOptions = {
-        title: 'Home'
+        title: 'Home',
+        headerTintColor: 'white',
+        headerStyle: { backgroundColor: '#303050' },
     };
 
     constructor(props) {
@@ -51,14 +53,14 @@ class HomeScreen extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>{`Home`}</Text>
-                <Text>{JSON.stringify(location, null, 2)} -</Text>
+                <Text style={styles.welcome}>{JSON.stringify(location, null, 2)} -</Text>
                 {
                     user && !user.isAnonymous &&
                     <TouchableHighlight
                         onPress={() => {
                             onUserLogout();
                         }}>
-                        <Text style={{margin: 10}}>{`Logout`}</Text>
+                        <Text style={styles.welcome}>{`Logout`}</Text>
                     </TouchableHighlight>
                 }
                 {
@@ -66,10 +68,10 @@ class HomeScreen extends Component {
                     <TouchableHighlight onPress={() => {
                         onNavigateToLoginScreen();
                     }}>
-                        <Text>Go to Login page</Text>
+                        <Text style={styles.welcome}>Go to Login page</Text>
                     </TouchableHighlight>
                 }
-                <Text>{JSON.stringify(user, null, 2)}</Text>
+                <Text style={styles.welcome}>{JSON.stringify(user, null, 2)}</Text>
             </View>
         );
     }

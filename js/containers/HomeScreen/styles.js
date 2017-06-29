@@ -20,11 +20,12 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#00ff00',
+        backgroundColor: '#202040'
     },
     welcome: {
-        fontSize: 20,
+        fontSize: 10,
         textAlign: 'center',
         margin: 10,
+        color: '#ffffff'
     }
 });

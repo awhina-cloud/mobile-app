@@ -11,21 +11,18 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
+import {StyleSheet, Text, View, TouchableHighlight, Button} from 'react-native';
 import {connect} from 'react-redux';
-import {FBLogin, FBLoginManager} from 'react-native-facebook-login';
 
 /**
  * Import local dependencies.
  */
 import styles from './styles';
-import FacebookLoginButton from '../../components/FacebookLoginButton';
-import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 /**
  * Import actions.
  */
-import {appUserLogoutCreator, appUserLoginFacebookCreator, appUserLoginGoogleCreator} from '../../actions';
+import {appUserLoginFacebookCreator, appUserLoginGoogleCreator} from '../../actions';
 
 /**
  * Create the container.
@@ -41,13 +38,12 @@ class LoginScreen extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>{`Please login to proceed`}</Text>
-                <FBLogin
-                    buttonView={<FacebookLoginButton />}
-                    loginBehavior={FBLoginManager.LoginBehaviors.Native}
-                    permissions={["email"]}
-                    onLogin={e => onUserLoginFacebook(e.credentials.token)}
-                />
-                <GoogleLoginButton login={() => onUserLoginGoogle()}/>
+                <View style={styles.facebook}>
+                    <Button onPress={() => onUserLoginFacebook()} color="#3b5998" title="Login with Facebook"/>
+                </View>
+                <View style={styles.google}>
+                    <Button onPress={() => onUserLoginGoogle()} color="#dd4b39" title="Login with Google"/>
+                </View>
             </View>
         );
     }
@@ -65,7 +61,7 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onUserLoginFacebook: (token) => dispatch(appUserLoginFacebookCreator(token)),
+        onUserLoginFacebook: () => dispatch(appUserLoginFacebookCreator()),
         onUserLoginGoogle: () => dispatch(appUserLoginGoogleCreator())
     }
 };

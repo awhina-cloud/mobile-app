@@ -26,5 +26,11 @@ export default StyleSheet.create({
         fontSize: 22,
         textAlign: 'center',
         margin: 10,
+    },
+    facebook: {
+        margin: 10,
+    },
+    google: {
+        margin: 10,
     }
 });

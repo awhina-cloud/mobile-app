@@ -105,16 +105,22 @@ export const appUserLogoutCreator = () => {
 /**
  * Login with facebook action.
  */
-export const appUserLoginFacebookCreator = (token) => {
+export const appUserLoginFacebookCreator = () => {
     return dispatch => {
         try {
-            const credential = firebase.auth.FacebookAuthProvider.credential(token);
-            const user = firebase.auth().signInWithCredential(credential);
-            if (user === 'cancelled') {
-                console.log('firebaseAuthFacebookLogin: Login cancelled');
-            } else {
-                console.log('firebaseAuthFacebookLogin: ' + JSON.stringify(user));
-            }
+            FBLoginManager.loginWithPermissions(["email"], function (error, data) {
+                if (!error) {
+                    const credential = firebase.auth.FacebookAuthProvider.credential(data.credentials.token);
+                    const firebaseUser = firebase.auth().signInWithCredential(credential);
+                    if (firebaseUser === 'cancelled') {
+                        console.log('firebaseAuthFacebookLogin: Login cancelled');
+                    } else {
+                        console.log('firebaseAuthFacebookLogin: ' + JSON.stringify(firebaseUser));
+                    }
+                } else {
+                    console.log("firebaseAuthFacebookLogin Error: ", error);
+                }
+            })
         } catch (ex) {
             console.log('firebaseAuthFacebookLogin', ex);
         }
@@ -134,7 +140,7 @@ export const appUserLoginGoogleCreator = () => {
                     if (firebaseUser === 'cancelled') {
                         console.log('firebaseAuthGoogleLogin: Login cancelled');
                     } else {
-                        console.log('firebaseAuthGoogleLogin: ' + JSON.stringify(user));
+                        console.log('firebaseAuthGoogleLogin: ' + JSON.stringify(firebaseUser));
                     }
                 }).catch(ex => console.log('google signin error', ex));
         } catch (ex) {
