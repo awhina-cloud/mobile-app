@@ -12,11 +12,13 @@
  */
 import {combineReducers} from 'redux';
 import {NavigationActions} from 'react-navigation';
+import R from 'ramda';
 
 /**
  * Import local dependencies.
  */
 import {AppNavigator} from './containers/AppNavigator/component';
+import {objectsToArrays, haversine} from './selectors';
 
 /**
  * Import actions.
@@ -34,7 +36,8 @@ import {
  */
 const initialAppState = {
     user: null,
-    location: null
+    location: null,
+    businesses: []
 };
 
 /**
@@ -76,7 +79,16 @@ function appUserLoggedOut(state) {
  * Location has changed action handler.
  */
 function locationChanged(state, location) {
-    return Object.assign({}, state, {location: location});
+    // Set new location and sort businesses by distance.
+    return R.evolve({
+        businesses: R.compose(
+            R.sort((a, b) => {
+                return a.distance - b.distance;
+            }),
+            R.map(x => R.assoc('distance', haversine(x, location.coords, {unit: 'meter'}), x))
+        ),
+        location: () => location
+    }, state);
 }
 
 /**
@@ -90,16 +102,18 @@ function locationError(state, error) {
 /**
  * User logged out action handler.
  */
-function appUserLoggedOut(state) {
-    return Object.assign({}, state, {user: null});
-}
-
-/**
- * User logged out action handler.
- */
 function appFetchedBusinesses(state, businesses) {
-    console.log('BUSINESSES', businesses);
-    return state;
+    // Transform firebase objects to arrays.
+    return R.assoc('businesses', objectsToArrays({
+        businesses: {
+            offers: {
+                variations: true,
+                extras: true
+            }
+        }
+    }, {
+        businesses
+    }).businesses, state);
 }
 
 /**
