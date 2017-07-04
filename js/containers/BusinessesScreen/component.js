@@ -28,42 +28,49 @@ import {appUserLogoutCreator} from '../../actions';
 /**
  * Create the container.
  */
-class BusinessListScreen extends Component {
+class BusinessesScreen extends Component {
 
     static navigationOptions = {
-        title: 'Home',
+        title: 'Businesses',
         headerTintColor: 'white',
-        headerStyle: { backgroundColor: '#303050' },
+        headerStyle: {backgroundColor: '#303050'}
     };
 
     constructor(props) {
         super(props);
 
+        this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id});
+
         this.state = {
-            latitude: null,
-            longitude: null,
-            error: null,
+            dataSource: this.dataSource.cloneWithRows(this.props.businesses)
         };
     }
 
-    render() {
-        let {onNavigateToOfferListScreen, businessList} = this.props;
-        let {latitude, longitude, error} = this.state;
+    componentWillReceiveProps(nextProps) {
+        console.log('!!!!!!!!', nextProps.businesses);
+        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.businesses)});
+    }
 
+    render() {
+        let {onNavigateToOfferListScreen, businesses} = this.props;
+        let {dataSource} = this.state;
+        console.log('@@@@@@@@@@@@@', businesses);
         return (
-            <View style={styles.container}>
-                <ListView dataSource={businessList} renderRow={rowData => <Text>{rowData}</Text>}/>
-            </View>
+                <ListView style={styles.container} dataSource={dataSource} renderRow={business => (
+                    <View style={styles.row} elevation={2}>
+                        <Text style={styles.businessName}>{business.name}</Text>
+                    </View>
+                )}/>
         );
     }
 }
 
 /**
- * Map state to component properties.
+ * Map state to component properties.   contentContainerStyle={styles.list}
  */
 const mapStateToProps = ({app}) => {
     return {
-        businessList: []
+        businesses: app.businesses
     }
 };
 
@@ -85,4 +92,4 @@ export default connect(
     null, {
         pure: false // https://github.com/reactjs/react-redux/blob/master/docs/troubleshooting.md
     }
-)(BusinessListScreen);
+)(BusinessesScreen);

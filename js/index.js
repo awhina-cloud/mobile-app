@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight, Platform} from 'react-native';
+import {StyleSheet, Text, View, TouchableHighlight, Platform, StatusBar} from 'react-native';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
@@ -59,6 +59,12 @@ try {
 } catch (ex) {
     console.log('GoogleSignIn.configure error', ex);
 }
+
+/**
+ * Style the phones status bar.
+ */
+StatusBar.setBarStyle('light-content');
+StatusBar.setBackgroundColor('#303050');
 
 /**
  * Export the component.

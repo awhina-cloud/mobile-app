@@ -79,7 +79,7 @@ function appUserLoggedOut(state) {
  * Location has changed action handler.
  */
 function locationChanged(state, location) {
-    // Set new location and sort businesses by distance.
+    // Update location and sort businesses by distance.
     return R.evolve({
         businesses: R.compose(
             R.sort((a, b) => {
@@ -120,7 +120,7 @@ function appFetchedBusinesses(state, businesses) {
  * Create the initial navigation state.
  */
 const initialNavState = AppNavigator.router.getStateForAction(
-    AppNavigator.router.getActionForPathAndParams('Home')
+    AppNavigator.router.getActionForPathAndParams('Businesses')
 );
 
 /**

@@ -18,14 +18,17 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#202040'
+        backgroundColor: '#e0e0ff'
     },
-    welcome: {
-        fontSize: 10,
-        textAlign: 'center',
-        margin: 10,
-        color: '#ffffff'
+    row: {
+        marginTop: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        padding: 40,
+        borderRadius: 5,
+        backgroundColor: '#ffffff'
+    },
+    businessName: {
+        color: '#000000'
     }
 });
