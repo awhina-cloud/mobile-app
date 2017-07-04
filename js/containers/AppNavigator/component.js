@@ -20,6 +20,8 @@ import {addNavigationHelpers, StackNavigator} from 'react-navigation';
 import LoginScreen from '../LoginScreen/component';
 import HomeScreen from '../HomeScreen/component';
 import BusinessesScreen from '../BusinessesScreen/component';
+import OffersScreen from '../OffersScreen/component';
+import OfferScreen from '../OfferScreen/component';
 
 /**
  * Export the app navigator.
@@ -27,7 +29,9 @@ import BusinessesScreen from '../BusinessesScreen/component';
 export const AppNavigator = StackNavigator({
     Login: {screen: LoginScreen},
     Home: {screen: HomeScreen, title: 'Home'},
-    Businesses: {screen: BusinessesScreen, title: 'Businesses'}
+    Businesses: {screen: BusinessesScreen, title: 'Businesses'},
+    Offers: {screen: OffersScreen, title: 'Offers'},
+    Offer: {screen: OfferScreen, title: 'Offer'}
 });
 
 /**

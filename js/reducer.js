@@ -37,7 +37,8 @@ import {
 const initialAppState = {
     user: null,
     location: null,
-    businesses: []
+    businesses: [],
+    business: null
 };
 
 /**

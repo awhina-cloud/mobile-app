@@ -27,10 +27,10 @@ import styles from './styles';
 /**
  * Create the container.
  */
-class BusinessesScreen extends Component {
+class OffersScreen extends Component {
 
     static navigationOptions = {
-        title: 'Businesses',
+        title: 'Offers',
         headerTintColor: 'white',
         headerStyle: {backgroundColor: '#303050'}
     };
@@ -41,22 +41,22 @@ class BusinessesScreen extends Component {
         this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id});
 
         this.state = {
-            dataSource: this.dataSource.cloneWithRows(this.props.businesses)
+            dataSource: this.dataSource.cloneWithRows(this.props.navigation.state.params.business.offers)
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.businesses)});
+        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.navigation.state.params.business.offers)});
     }
 
     render() {
-        let {onNavigateToOffersScreen, businesses} = this.props;
+        let {onNavigateToOfferScreen, navigation} = this.props;
         let {dataSource} = this.state;
         return (
-            <ListView style={styles.container} dataSource={dataSource} renderRow={business => (
-                <TouchableHighlight onPress={() => onNavigateToOffersScreen(business)}>
+            <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
+                <TouchableHighlight onPress={() => onNavigateToOfferScreen(offer)}>
                     <View style={styles.row} elevation={2}>
-                        <Text style={styles.businessName}>{business.name}</Text>
+                        <Text style={styles.businessName}>{offer.name}</Text>
                     </View>
                 </TouchableHighlight>
             )}/>
@@ -68,9 +68,7 @@ class BusinessesScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
-    return {
-        businesses: app.businesses
-    }
+    return {}
 };
 
 /**
@@ -78,9 +76,9 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onNavigateToOffersScreen: (business) => dispatch(NavigationActions.navigate({
-            routeName: 'Offers',
-            params: {business}
+        onNavigateToOfferScreen: (offer) => dispatch(NavigationActions.navigate({
+            routeName: 'Offer',
+            params: {offer}
         }))
     }
 };
@@ -94,4 +92,4 @@ export default connect(
     null, {
         pure: false // https://github.com/reactjs/react-redux/blob/master/docs/troubleshooting.md
     }
-)(BusinessesScreen);
+)(OffersScreen);
