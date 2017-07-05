@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, ListView, TouchableHighlight} from 'react-native';
+import {StyleSheet, Text, View, ListView, TouchableHighlight, Button} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
 
@@ -23,6 +23,7 @@ import styles from './styles';
 /**
  * Import actions.
  */
+import {offerAddToOrderCreator} from '../../actions';
 
 /**
  * Create the container.
@@ -40,18 +41,24 @@ class OffersScreen extends Component {
     }
 
     render() {
-        let {onNavigateToOfferScreen, navigation} = this.props;
+        let {onAddToOrder, order, navigation} = this.props;
         let {offer} = navigation.state.params;
         return (
             <View style={styles.container}>
                 <Text style={styles.name}>{offer.name}</Text>
                 <Text style={styles.variations}>Variations</Text>
                 {offer.variations.map(variaton => (
-                    <Text style={styles.variation}>{variaton.name} - NZD {variaton.price}</Text>
+                    <Text style={styles.variation} key={variaton.id}>{variaton.name} - NZD {variaton.price}</Text>
                 ))}
                 <Text style={styles.extras}>Extras</Text>
                 {offer.extras.map(extra => (
-                    <Text style={styles.extra}>{extra.name} - NZD {extra.price}</Text>
+                    <Text style={styles.extra} key={extra.id}>{extra.name} - NZD {extra.price}</Text>
+                ))}
+                <View style={styles.addButton}>
+                    <Button onPress={() => onAddToOrder(offer)} color="#3b5998" title="Add to order"/>
+                </View>
+                {order && order.offers.map(o => (
+                    <Text>{o.name}</Text>
                 ))}
             </View>
         );
@@ -62,7 +69,9 @@ class OffersScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
-    return {}
+    return {
+        order: app.order
+    };
 };
 
 /**
@@ -70,10 +79,7 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onNavigateToOfferScreen: (offer) => dispatch(NavigationActions.navigate({
-            routeName: 'Offer',
-            params: {offer}
-        }))
+        onAddToOrder: (offer) => dispatch(offerAddToOrderCreator(offer))
     }
 };
 

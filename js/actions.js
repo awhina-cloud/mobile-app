@@ -10,6 +10,7 @@
 /**
  * Import dependencies.
  */
+import {NavigationActions} from 'react-navigation';
 import {FBLoginManager} from 'react-native-facebook-login';
 import GoogleSignIn from 'react-native-google-sign-in';
 
@@ -27,19 +28,21 @@ export const APP_USER_LOGGED_OUT = 'APP_USER_LOGGED_OUT';
 export const LOCATION_CHANGED = 'LOCATION_CHANGED';
 export const LOCATION_ERROR = 'LOCATION_ERROR';
 
-export const APP_FETCH_POSTS = 'APP_FETCH_POSTS';
 export const APP_FETCHED_BUSINESSES = 'APP_FETCH_BUSINESSES';
+export const APP_FETCHED_ORDERS = 'APP_FETCHED_ORDERS';
+
+export const OFFER_ADD_TO_ORDER = 'OFFER_ADD_TO_ORDER';
 
 /**
  * User has logged in action.
  */
 export const appUserLoggedInCreator = (user) => {
     return dispatch => {
-        // firebase.database().ref(`users/${user.uid}/posts`).on('value', (snapshot) => {
-        //     dispatch({type: APP_FETCH_POSTS, payload: snapshot.val()});
-        // });
         firebase.database().ref(`businesses`).on('value', (snapshot) => {
             dispatch({type: APP_FETCHED_BUSINESSES, payload: snapshot.val()});
+        });
+        firebase.database().ref(`user/${user.uid}/orders`).on('value', (snapshot) => {
+            dispatch({type: APP_FETCHED_ORDERS, payload: snapshot.val()});
         });
         dispatch({type: APP_USER_LOGGED_IN, payload: user});
     };
@@ -146,5 +149,15 @@ export const appUserLoginGoogleCreator = () => {
         } catch (ex) {
             console.log('firebaseAuthGoogleLogin', ex);
         }
+    };
+};
+
+/**
+ * User is adding an offer to the current order.
+ */
+export const offerAddToOrderCreator = (payload) => {
+    return dispatch => {
+        dispatch({type: OFFER_ADD_TO_ORDER, payload});
+        dispatch(NavigationActions.back());
     };
 };

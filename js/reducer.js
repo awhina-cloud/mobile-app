@@ -26,6 +26,7 @@ import {objectsToArrays, haversine} from './selectors';
 import {
     APP_USER_LOGGED_IN,
     APP_USER_LOGGED_OUT,
+    OFFER_ADD_TO_ORDER,
     LOCATION_CHANGED,
     LOCATION_ERROR,
     APP_FETCHED_BUSINESSES
@@ -38,7 +39,8 @@ const initialAppState = {
     user: null,
     location: null,
     businesses: [],
-    business: null
+    orders: [],
+    order: null
 };
 
 /**
@@ -51,6 +53,8 @@ const appReducer = (state = initialAppState, action) => {
             return appUserLoggedIn(state, payload);
         case APP_USER_LOGGED_OUT:
             return appUserLoggedOut(state);
+        case OFFER_ADD_TO_ORDER:
+            return offerAddToOrder(state, payload);
         case LOCATION_CHANGED:
             return locationChanged(state, payload);
         case LOCATION_ERROR:
@@ -74,6 +78,23 @@ function appUserLoggedIn(state, user) {
  */
 function appUserLoggedOut(state) {
     return Object.assign({}, state, {user: null});
+}
+
+/**
+ * Add an offer to the current order.
+ */
+function offerAddToOrder(state, offer) {
+    return R.evolve({
+        order: (o) => {
+            if (!o) {
+                return {
+                    offers: [offer]
+                }
+            } else {
+                return R.assoc('offers', R.append(offer, o.offers), o);
+            }
+        }
+    }, state);
 }
 
 /**

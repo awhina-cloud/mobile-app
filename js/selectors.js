@@ -20,30 +20,30 @@ export const haversine = (function () {
     // convert to radians
     let toRad = function (num) {
         return num * Math.PI / 180
-    }
+    };
 
     return function haversine (start, end, options) {
-        options   = options || {}
+        options   = options || {};
 
         let radii = {
             km:    6371,
             mile:  3960,
             meter: 6371000,
             nmi:   3440
-        }
+        };
 
         let R = options.unit in radii
             ? radii[options.unit]
-            : radii.km
+            : radii.km;
 
-        let dLat = toRad(end.latitude - start.latitude)
-        let dLon = toRad(end.longitude - start.longitude)
-        let lat1 = toRad(start.latitude)
-        let lat2 = toRad(end.latitude)
+        let dLat = toRad(end.latitude - start.latitude);
+        let dLon = toRad(end.longitude - start.longitude);
+        let lat1 = toRad(start.latitude);
+        let lat2 = toRad(end.latitude);
 
         let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2)
-        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
         if (options.threshold) {
             return options.threshold > (R * c)
