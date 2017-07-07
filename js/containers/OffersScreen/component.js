@@ -54,7 +54,7 @@ class OffersScreen extends Component {
         let {dataSource} = this.state;
         return (
             <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
-                <TouchableHighlight onPress={() => onNavigateToOfferScreen(offer)}>
+                <TouchableHighlight onPress={() => onNavigateToOfferScreen({business: navigation.state.params.business, offer})}>
                     <View style={styles.row} elevation={2}>
                         <Text style={styles.businessName}>{offer.name}</Text>
                     </View>
@@ -76,9 +76,9 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onNavigateToOfferScreen: (offer) => dispatch(NavigationActions.navigate({
+        onNavigateToOfferScreen: (params) => dispatch(NavigationActions.navigate({
             routeName: 'Offer',
-            params: {offer}
+            params: params
         }))
     }
 };

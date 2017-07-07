@@ -33,6 +33,10 @@ export const APP_FETCHED_ORDERS = 'APP_FETCHED_ORDERS';
 
 export const OFFER_ADD_TO_ORDER = 'OFFER_ADD_TO_ORDER';
 
+export const ORDER_ADD_MORE_OFFERS = 'ORDER_ADD_MORE_OFFERS';
+export const ORDER_SUBMIT = 'ORDER_SUBMIT';
+export const ORDER_CANCEL = 'ORDER_CANCEL';
+
 /**
  * User has logged in action.
  */
@@ -41,7 +45,7 @@ export const appUserLoggedInCreator = (user) => {
         firebase.database().ref(`businesses`).on('value', (snapshot) => {
             dispatch({type: APP_FETCHED_BUSINESSES, payload: snapshot.val()});
         });
-        firebase.database().ref(`user/${user.uid}/orders`).on('value', (snapshot) => {
+        firebase.database().ref(`users/${user.uid}/orders`).on('value', (snapshot) => {
             dispatch({type: APP_FETCHED_ORDERS, payload: snapshot.val()});
         });
         dispatch({type: APP_USER_LOGGED_IN, payload: user});
@@ -155,9 +159,29 @@ export const appUserLoginGoogleCreator = () => {
 /**
  * User is adding an offer to the current order.
  */
-export const offerAddToOrderCreator = (payload) => {
+export const offerAddToOrderCreator = (payload) => ({type: OFFER_ADD_TO_ORDER, payload});
+
+/**
+ * User wants to add more offers to the current order.
+ */
+export const orderAddMoreOffersCreator = (payload) => ({type: ORDER_ADD_MORE_OFFERS, payload});
+
+/**
+ * User wants to submit the current order.
+ */
+export const orderSubmitCreator = (payload) => {
     return dispatch => {
-        dispatch({type: OFFER_ADD_TO_ORDER, payload});
-        dispatch(NavigationActions.back());
+        let {user, order} = payload;
+        console.log('####################', user);
+        let newOrderRef = firebase.database().ref(`users/${user.uid}/orders`).push();
+        newOrderRef.set({
+            businessId: order.business.id
+        });
+        dispatch({type: ORDER_SUBMIT, payload: payload});
     };
 };
+
+/**
+ * User is canceling the current order.
+ */
+export const orderCancelCreator = () => ({type: ORDER_CANCEL});

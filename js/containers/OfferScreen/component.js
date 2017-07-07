@@ -55,11 +55,8 @@ class OffersScreen extends Component {
                     <Text style={styles.extra} key={extra.id}>{extra.name} - NZD {extra.price}</Text>
                 ))}
                 <View style={styles.addButton}>
-                    <Button onPress={() => onAddToOrder(offer)} color="#3b5998" title="Add to order"/>
+                    <Button onPress={() => onAddToOrder(navigation.state.params)} color="#3b5998" title="Add to order"/>
                 </View>
-                {order && order.offers.map(o => (
-                    <Text>{o.name}</Text>
-                ))}
             </View>
         );
     }
@@ -79,7 +76,7 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onAddToOrder: (offer) => dispatch(offerAddToOrderCreator(offer))
+        onAddToOrder: (params) => dispatch(offerAddToOrderCreator(params))
     }
 };
 

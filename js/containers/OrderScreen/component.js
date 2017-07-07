@@ -23,14 +23,15 @@ import styles from './styles';
 /**
  * Import actions.
  */
+import {orderAddMoreOffersCreator, orderSubmitCreator, orderCancelCreator} from '../../actions';
 
 /**
  * Create the container.
  */
-class BusinessesScreen extends Component {
+class OrderScreen extends Component {
 
     static navigationOptions = {
-        title: 'Businesses',
+        title: 'Order',
         headerTintColor: 'white',
         headerStyle: {backgroundColor: '#303050'}
     };
@@ -41,32 +42,32 @@ class BusinessesScreen extends Component {
         this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id});
 
         this.state = {
-            dataSource: this.dataSource.cloneWithRows(this.props.businesses)
+            dataSource: this.dataSource.cloneWithRows(this.props.order.offers)
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.businesses)});
+        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.order.offers)});
     }
 
     render() {
-        let {onNavigateToOffersScreen, businesses, orders} = this.props;
+        let {onOrderAddMoreOffers, onOrderSubmitCreator, onOrderCancelCreator, user, order} = this.props;
         let {dataSource} = this.state;
         return (
             <View style={styles.container}>
-                {
-                    orders.length > 0 &&
-                    <View style={styles.button}>
-                        <Button onPress={() => console.log('PRESSED')} color="#3b5998"
-                                title={`${orders.length} Orders in progress.`}/>
+                <View style={styles.button}>
+                    <Button onPress={() => onOrderAddMoreOffers(order.business)} color="#3b5998" title="Add more offers"/>
+                </View>
+                <View style={styles.button}>
+                    <Button onPress={() => onOrderSubmitCreator(user, order)} color="#3b5998" title="Submit order"/>
+                </View>
+                <View style={styles.button}>
+                    <Button onPress={() => onOrderCancelCreator()} color="#3b5998" title="Cancel order"/>
+                </View>
+                <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
+                    <View style={styles.row} elevation={2}>
+                        <Text style={styles.businessName}>{offer.name}</Text>
                     </View>
-                }
-                <ListView style={styles.container} dataSource={dataSource} renderRow={business => (
-                    <TouchableHighlight onPress={() => onNavigateToOffersScreen(business)}>
-                        <View style={styles.row} elevation={2}>
-                            <Text style={styles.businessName}>{business.name}</Text>
-                        </View>
-                    </TouchableHighlight>
                 )}/>
             </View>
         );
@@ -78,9 +79,9 @@ class BusinessesScreen extends Component {
  */
 const mapStateToProps = ({app}) => {
     return {
-        businesses: app.businesses,
-        orders: app.orders
-    }
+        user: app.user,
+        order: app.order
+    };
 };
 
 /**
@@ -88,10 +89,9 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onNavigateToOffersScreen: (business) => dispatch(NavigationActions.navigate({
-            routeName: 'Offers',
-            params: {business}
-        }))
+        onOrderAddMoreOffers: (business) => dispatch(orderAddMoreOffersCreator(business)),
+        onOrderSubmitCreator: (user, order) => dispatch(orderSubmitCreator({user, order})),
+        onOrderCancelCreator: () => dispatch(orderCancelCreator())
     }
 };
 
@@ -104,4 +104,4 @@ export default connect(
     null, {
         pure: false // https://github.com/reactjs/react-redux/blob/master/docs/troubleshooting.md
     }
-)(BusinessesScreen);
+)(OrderScreen);

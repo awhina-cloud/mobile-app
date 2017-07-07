@@ -22,6 +22,7 @@ import HomeScreen from '../HomeScreen/component';
 import BusinessesScreen from '../BusinessesScreen/component';
 import OffersScreen from '../OffersScreen/component';
 import OfferScreen from '../OfferScreen/component';
+import OrderScreen from '../OrderScreen/component';
 
 /**
  * Export the app navigator.
@@ -31,7 +32,8 @@ export const AppNavigator = StackNavigator({
     Home: {screen: HomeScreen, title: 'Home'},
     Businesses: {screen: BusinessesScreen, title: 'Businesses'},
     Offers: {screen: OffersScreen, title: 'Offers'},
-    Offer: {screen: OfferScreen, title: 'Offer'}
+    Offer: {screen: OfferScreen, title: 'Offer'},
+    Order: {screen: OrderScreen, title: 'Order'}
 });
 
 /**
