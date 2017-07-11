@@ -232,7 +232,7 @@ function navOfferAddToOrder(state, params) {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.reset({
             index: 0,
             actions: [
-                NavigationActions.navigate({routeName: 'Order', params}),
+                NavigationActions.navigate({routeName: 'CreateOrder', params}),
                 //NavigationActions.navigate({routeName: 'Offers', params: dealsOffersPathAndParams.params})
             ]
         }));
@@ -246,7 +246,7 @@ function navOfferAddToOrder(state, params) {
  */
 function navOrderAddMoreOffers(state, deal) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'Order') {
+    if (pathAndParams.path === 'CreateOrder') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Offers',
             params: {deal}
@@ -261,7 +261,7 @@ function navOrderAddMoreOffers(state, deal) {
  */
 function navOrderSubmit(state, {user, order}) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'Order') {
+    if (pathAndParams.path === 'CreateOrder') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Deals'
         }));
@@ -275,7 +275,7 @@ function navOrderSubmit(state, {user, order}) {
  */
 function navOrderCancel(state) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'Order') {
+    if (pathAndParams.path === 'CreateOrder') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Deals'
         }));
