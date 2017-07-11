@@ -33,7 +33,11 @@ export default StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#ffffff'
     },
-    businessName: {
+    offerTitle: {
+        fontSize: 20,
+        color: '#000000'
+    },
+    offerDescription: {
         color: '#000000'
     }
 });

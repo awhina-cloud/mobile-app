@@ -42,31 +42,33 @@ class OrderScreen extends Component {
         this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id});
 
         this.state = {
-            dataSource: this.dataSource.cloneWithRows(this.props.order.offers)
+            dataSource: this.dataSource.cloneWithRows(this.props.order.items)
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.order.offers)});
+        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.order.items)});
     }
 
     render() {
-        let {onOrderAddMoreOffers, onOrderSubmitCreator, onOrderCancelCreator, user, order} = this.props;
+        let {onOrderAddMoreOffers, onOrderSubmitCreator, onOrderCancelCreator, buyer, order} = this.props;
         let {dataSource} = this.state;
+        console.log('EEEEEEEEEEE', buyer);
         return (
             <View style={styles.container}>
                 <View style={styles.button}>
-                    <Button onPress={() => onOrderAddMoreOffers(order.business)} color="#3b5998" title="Add more offers"/>
+                    <Button onPress={() => onOrderAddMoreOffers(order.deal)} color="#3b5998" title="Add more offers"/>
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() => onOrderSubmitCreator(user, order)} color="#3b5998" title="Submit order"/>
+                    <Button onPress={() => onOrderSubmitCreator(buyer, order)} color="#3b5998" title="Submit order"/>
                 </View>
                 <View style={styles.button}>
                     <Button onPress={() => onOrderCancelCreator()} color="#3b5998" title="Cancel order"/>
                 </View>
-                <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
+                <ListView style={styles.container} dataSource={dataSource} renderRow={item => (
                     <View style={styles.row} elevation={2}>
-                        <Text style={styles.businessName}>{offer.name}</Text>
+                        <Text style={styles.offerTitle}>{item.title}</Text>
+                        <Text style={styles.offerDescription}>{item.description}</Text>
                     </View>
                 )}/>
             </View>
@@ -78,8 +80,9 @@ class OrderScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
+    console.log('@@@@@@@@@@@@@', app.buyer.orders);
     return {
-        user: app.user,
+        buyer: app.buyer,
         order: app.order
     };
 };
@@ -89,8 +92,8 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onOrderAddMoreOffers: (business) => dispatch(orderAddMoreOffersCreator(business)),
-        onOrderSubmitCreator: (user, order) => dispatch(orderSubmitCreator({user, order})),
+        onOrderAddMoreOffers: (deal) => dispatch(orderAddMoreOffersCreator(deal)),
+        onOrderSubmitCreator: (buyer, order) => dispatch(orderSubmitCreator({buyer, order})),
         onOrderCancelCreator: () => dispatch(orderCancelCreator())
     }
 };

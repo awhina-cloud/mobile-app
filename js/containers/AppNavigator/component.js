@@ -19,7 +19,7 @@ import {addNavigationHelpers, StackNavigator} from 'react-navigation';
  */
 import LoginScreen from '../LoginScreen/component';
 import HomeScreen from '../HomeScreen/component';
-import BusinessesScreen from '../BusinessesScreen/component';
+import DealsScreen from '../DealsScreen/component';
 import OffersScreen from '../OffersScreen/component';
 import OfferScreen from '../OfferScreen/component';
 import OrderScreen from '../OrderScreen/component';
@@ -30,7 +30,7 @@ import OrderScreen from '../OrderScreen/component';
 export const AppNavigator = StackNavigator({
     Login: {screen: LoginScreen},
     Home: {screen: HomeScreen, title: 'Home'},
-    Businesses: {screen: BusinessesScreen, title: 'Businesses'},
+    Deals: {screen: DealsScreen, title: 'Deals'},
     Offers: {screen: OffersScreen, title: 'Offers'},
     Offer: {screen: OfferScreen, title: 'Offer'},
     Order: {screen: OrderScreen, title: 'Order'}

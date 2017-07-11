@@ -1,3 +1,80 @@
+// buyers/[buyerId]
+//   /name
+//   /email
+//   /photo
+//   /orders/[orderId]                  < denormalized
+//      /seller                         < denormalized
+//        /id
+//        /name
+//        /address
+//        /latitude
+//       /longitude
+//      /items/[itemId]                 < these are basically instantiated offers
+//        /variation
+//          /id
+//          /title
+//          /description
+//          /image
+//          /price
+//        /extras/[extrasId]
+//          /title
+//          /description
+//          /image
+//          /price
+//          /count
+//
+// sellers/[sellerId]
+//   /name
+//   /address
+//   /latitude
+//   /longitude
+//   /orders/[orderId]                  < denormalized
+//     /buyer                           < denormalized
+//       /id
+//       /name
+//       /email
+//       /photo
+//     /items/itemId                    < these are basically instantiated offers
+//        /variation
+//          /id
+//          /title
+//          /description
+//          /image
+//          /price
+//        /extras/[extrasId]
+//          /title
+//          /description
+//          /image
+//          /price
+//          /count
+//
+// deals/[dealId]
+//   /seller                            < denormalized
+//     /id
+//     /name
+//     /address
+//     /latitude
+//     /longitude
+//   /title
+//   /description
+//   /image
+//   /offers/[offerId]
+//     /variations/[variationId]
+//       /title
+//       /description
+//       /image
+//       /price
+//     /extras/[extrasId]
+//       /title
+//       /description
+//       /image
+//       /price
+//       /min
+//       /max
+
+
+const R = require('ramda');
+
 /**
  * Fancy ID generator that creates 20-character string identifiers with the following properties:
  *
@@ -56,6 +133,22 @@ const generatePushID = (function () {
     };
 })();
 
+/**
+ * Export firebase object to array transformation helper.
+ */
+const objectToArray = R.curry(obj => R.map(x => R.assoc('id', x, obj[x]), R.keys(obj)));
+
+/**
+ * Export firebase recursive object to array transformation helper.
+ */
+const objectsToArrays = (transformations, obj) => {
+    R.forEachObjIndexed((value, key) => {
+        obj[key] = objectToArray(obj[key]);
+        obj[key] = R.map(p => objectsToArrays(value, p), obj[key]);
+    }, transformations);
+    return obj;
+};
+
 const createBusiness = (function () {
     let counter = -1;
     return function () {
@@ -85,34 +178,80 @@ const createOffer = (function () {
     return function () {
         counter++;
         return {
-            name: `Offer ${counter}`,
+            title: `Offer ${counter}`,
+            description: `Description ${counter}`,
+            image: `https://image${counter}.png`,
             variations: {
                 [`${generatePushID()}`]: {
-                    name: 'Small',
+                    title: 'Small',
                     price: 3.0
                 },
                 [`${generatePushID()}`]: {
-                    name: 'Medium',
+                    title: 'Medium',
                     price: 4.0
                 },
                 [`${generatePushID()}`]: {
-                    name: 'Large',
+                    title: 'Large',
                     price: 5.0
                 }
             },
             extras: {
                 [`${generatePushID()}`]: {
-                    name: 'Decaf',
-                    price: 0.5
+                    title: 'Decaf',
+                    price: 0.5,
+                    min: 0,
+                    max: 1
                 },
                 [`${generatePushID()}`]: {
-                    name: 'Sugar',
-                    price: 0.0
+                    title: 'Sugar',
+                    price: 0.0,
+                    min: 0,
+                    max: 10
                 },
                 [`${generatePushID()}`]: {
-                    name: 'Milk',
-                    price: 0.0
+                    title: 'Milk',
+                    price: 0.0,
+                    min: 0,
+                    max: 1
                 },
+            }
+        }
+    }
+})();
+
+const createSeller = (function () {
+    let counter = -1;
+    return function () {
+        counter++;
+        return {
+            name: `Seller ${counter}`,
+            address: `Queenstreet ${counter}, Auckland City, Auckland`,
+            latitude: -36.845239 + (counter * 0.0001),
+            longitude: 175.773221 + (counter * 0.0001)
+        }
+    }
+})();
+
+const createDeal = (function () {
+    let counter = -1;
+    return function (seller) {
+        counter++;
+        return {
+            seller: seller,
+            title: `Deal ${counter}`,
+            description: `Description ${counter}`,
+            image: `https://image${counter}.png`,
+            offers: {
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
+                [`${generatePushID()}`]: createOffer(),
             }
         }
     }
@@ -120,125 +259,154 @@ const createOffer = (function () {
 
 const createDatabase = (function () {
     return function () {
+        let sellers = {
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+            [`${generatePushID()}`]: createSeller(),
+        };
+        let sellersArr = objectsToArrays({
+            sellers: true
+        }, {
+            sellers
+        }).sellers;
+        let deals = {
+            [`${generatePushID()}`]: createDeal(sellersArr[0]),
+            [`${generatePushID()}`]: createDeal(sellersArr[1]),
+            [`${generatePushID()}`]: createDeal(sellersArr[2]),
+            [`${generatePushID()}`]: createDeal(sellersArr[3]),
+            [`${generatePushID()}`]: createDeal(sellersArr[4]),
+            [`${generatePushID()}`]: createDeal(sellersArr[5]),
+            [`${generatePushID()}`]: createDeal(sellersArr[6]),
+            [`${generatePushID()}`]: createDeal(sellersArr[7]),
+            [`${generatePushID()}`]: createDeal(sellersArr[8]),
+            [`${generatePushID()}`]: createDeal(sellersArr[9]),
+        };
         return {
-            businesses: {
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-                [`${generatePushID()}`]: createBusiness(),
-            }
+            sellers: sellers,
+            deals: deals
         }
     }
 })();
 
-//console.log(JSON.stringify(createDatabase(), null, 2));
+console.log(JSON.stringify(createDatabase(), null, 2));
 
-let db = {
-    businesses: {
-        [`${generatePushID()}`]: createBusiness(),
-        [`${generatePushID()}`]: createBusiness(),
-    }
-};
-
-const R = require('ramda');
-
-//let x = R.map(x => R.assoc('id', x, businesses[x]), R.keys(businesses));
-
-let objectToArray = R.curry(obj => R.map(x => R.assoc('id', x, obj[x]), R.keys(obj)));
-let propToArray = R.curry((prop, arr) => R.map(x => R.evolve({[`${prop}`]: y => objectToArray(y)}, x), arr));
-
-//let x = R.map(x => R.evolve({offers: y=>objectToArray(y)}, x), objectToArray(businesses));
-
-//let x = propToArray('offers', objectToArray(businesses));
-
-//let x = objectToArray(businesses);
-
-
-// const transform = (transformations, obj) => {
-//     R.forEachObjIndexed((value, key) => {
-//         obj[key] = objectToArray(obj[key]);
-//         obj[key] = R.map(p => transform(value, p), obj[key]);
-//     }, transformations);
-//     return obj;
-// };
-//
-// transform({
+// let db = {
 //     businesses: {
-//         offers: {
-//             variations: true,
-//             extras: true
-//         }
+//         [`${generatePushID()}`]: createBusiness(),
+//         [`${generatePushID()}`]: createBusiness(),
 //     }
-// }, db);
-//
-// console.log(JSON.stringify(db, null, 2));
-
-// const businessTransformation = {
-//     businesses: objectToArray
 // };
 //
-// let x = R.evolve(businessTransformation, db);
+// const R = require('ramda');
 //
-// console.log(JSON.stringify(x, null, 2));
+// //let x = R.map(x => R.assoc('id', x, businesses[x]), R.keys(businesses));
+//
+// let objectToArray = R.curry(obj => R.map(x => R.assoc('id', x, obj[x]), R.keys(obj)));
+// let propToArray = R.curry((prop, arr) => R.map(x => R.evolve({[`${prop}`]: y => objectToArray(y)}, x), arr));
+//
+// //let x = R.map(x => R.evolve({offers: y=>objectToArray(y)}, x), objectToArray(businesses));
+//
+// //let x = propToArray('offers', objectToArray(businesses));
+//
+// //let x = objectToArray(businesses);
+//
+//
+// // const transform = (transformations, obj) => {
+// //     R.forEachObjIndexed((value, key) => {
+// //         obj[key] = objectToArray(obj[key]);
+// //         obj[key] = R.map(p => transform(value, p), obj[key]);
+// //     }, transformations);
+// //     return obj;
+// // };
+// //
+// // transform({
+// //     businesses: {
+// //         offers: {
+// //             variations: true,
+// //             extras: true
+// //         }
+// //     }
+// // }, db);
+// //
+// // console.log(JSON.stringify(db, null, 2));
+//
+// // const businessTransformation = {
+// //     businesses: objectToArray
+// // };
+// //
+// // let x = R.evolve(businessTransformation, db);
+// //
+// // console.log(JSON.stringify(x, null, 2));
+//
+// // let arr = [{a:1}, {b:2}];
+// // let obj = {arr: arr};
+// // let x = R.evolve({arr: R.map(R.assoc('x', 5))}, obj);
+// // console.log(JSON.stringify(x, null, 2))
+//
+// const haversine = (function () {
+//
+//     // convert to radians
+//     let toRad = function (num) {
+//         return num * Math.PI / 180
+//     }
+//
+//     return function haversine (start, end, options) {
+//         options   = options || {}
+//
+//         let radii = {
+//             km:    6371,
+//             mile:  3960,
+//             meter: 6371000,
+//             nmi:   3440
+//         }
+//
+//         let R = options.unit in radii
+//             ? radii[options.unit]
+//             : radii.km
+//
+//         let dLat = toRad(end.latitude - start.latitude)
+//         let dLon = toRad(end.longitude - start.longitude)
+//         let lat1 = toRad(start.latitude)
+//         let lat2 = toRad(end.latitude)
+//
+//         let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+//             Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2)
+//         let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+//
+//         if (options.threshold) {
+//             return options.threshold > (R * c)
+//         }
+//
+//         return R * c
+//     }
+//
+// })();
+//
+// const start = {
+//     latitude: -36.846889,
+//     longitude: 174.773955
+// }
+//
+// const end = {
+//     latitude: -36.845429,
+//     longitude: 174.773322
+// }
+//
+// console.log(haversine(start, end, {unit: 'meter'}))
 
-// let arr = [{a:1}, {b:2}];
-// let obj = {arr: arr};
-// let x = R.evolve({arr: R.map(R.assoc('x', 5))}, obj);
-// console.log(JSON.stringify(x, null, 2))
-
-const haversine = (function () {
-
-    // convert to radians
-    let toRad = function (num) {
-        return num * Math.PI / 180
-    }
-
-    return function haversine (start, end, options) {
-        options   = options || {}
-
-        let radii = {
-            km:    6371,
-            mile:  3960,
-            meter: 6371000,
-            nmi:   3440
-        }
-
-        let R = options.unit in radii
-            ? radii[options.unit]
-            : radii.km
-
-        let dLat = toRad(end.latitude - start.latitude)
-        let dLon = toRad(end.longitude - start.longitude)
-        let lat1 = toRad(start.latitude)
-        let lat2 = toRad(end.latitude)
-
-        let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2)
-        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-
-        if (options.threshold) {
-            return options.threshold > (R * c)
-        }
-
-        return R * c
-    }
-
-})();
-
-const start = {
-    latitude: -36.846889,
-    longitude: 174.773955
-}
-
-const end = {
-    latitude: -36.845429,
-    longitude: 174.773322
-}
-
-console.log(haversine(start, end, {unit: 'meter'}))
+// let buyer = {
+//     orders: {
+//         a: 5,
+//         b: 6,
+//         c: 7
+//     }
+// };
+//
+// console.log(objectsToArrays({orders: true}, buyer));

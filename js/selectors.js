@@ -22,14 +22,14 @@ export const haversine = (function () {
         return num * Math.PI / 180
     };
 
-    return function haversine (start, end, options) {
-        options   = options || {};
+    return function haversine(start, end, options) {
+        options = options || {};
 
         let radii = {
-            km:    6371,
-            mile:  3960,
+            km: 6371,
+            mile: 3960,
             meter: 6371000,
-            nmi:   3440
+            nmi: 3440
         };
 
         let R = options.unit in radii
@@ -41,9 +41,9 @@ export const haversine = (function () {
         let lat1 = toRad(start.latitude);
         let lat2 = toRad(end.latitude);
 
-        let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         if (options.threshold) {
             return options.threshold > (R * c)
@@ -63,6 +63,9 @@ export const objectToArray = R.curry(obj => R.map(x => R.assoc('id', x, obj[x]),
  * Export firebase recursive object to array transformation helper.
  */
 export const objectsToArrays = (transformations, obj) => {
+    if (!obj) {
+        return obj;
+    }
     R.forEachObjIndexed((value, key) => {
         obj[key] = objectToArray(obj[key]);
         obj[key] = R.map(p => objectsToArrays(value, p), obj[key]);

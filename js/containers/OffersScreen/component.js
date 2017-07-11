@@ -41,12 +41,12 @@ class OffersScreen extends Component {
         this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id});
 
         this.state = {
-            dataSource: this.dataSource.cloneWithRows(this.props.navigation.state.params.business.offers)
+            dataSource: this.dataSource.cloneWithRows(this.props.navigation.state.params.deal.offers)
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.navigation.state.params.business.offers)});
+        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.navigation.state.params.deal.offers)});
     }
 
     render() {
@@ -54,9 +54,10 @@ class OffersScreen extends Component {
         let {dataSource} = this.state;
         return (
             <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
-                <TouchableHighlight onPress={() => onNavigateToOfferScreen({business: navigation.state.params.business, offer})}>
+                <TouchableHighlight onPress={() => onNavigateToOfferScreen({deal: navigation.state.params.deal, offer})}>
                     <View style={styles.row} elevation={2}>
-                        <Text style={styles.businessName}>{offer.name}</Text>
+                        <Text style={styles.offerTitle}>{offer.title}</Text>
+                        <Text style={styles.offerDescription}>{offer.description}</Text>
                     </View>
                 </TouchableHighlight>
             )}/>

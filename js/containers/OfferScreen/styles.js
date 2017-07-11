@@ -21,8 +21,11 @@ export default StyleSheet.create({
         backgroundColor: '#e0e0ff',
         padding: 10
     },
-    name: {
+    title: {
         fontSize: 20
+    },
+    description: {
+        fontSize: 16
     },
     variations: {
         marginTop: 10,

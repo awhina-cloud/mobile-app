@@ -13,6 +13,7 @@
 import {NavigationActions} from 'react-navigation';
 import {FBLoginManager} from 'react-native-facebook-login';
 import GoogleSignIn from 'react-native-google-sign-in';
+import R from 'ramda';
 
 /**
  * Import local dependencies.
@@ -28,8 +29,8 @@ export const APP_USER_LOGGED_OUT = 'APP_USER_LOGGED_OUT';
 export const LOCATION_CHANGED = 'LOCATION_CHANGED';
 export const LOCATION_ERROR = 'LOCATION_ERROR';
 
-export const APP_FETCHED_BUSINESSES = 'APP_FETCH_BUSINESSES';
-export const APP_FETCHED_ORDERS = 'APP_FETCHED_ORDERS';
+export const APP_FETCHED_DEALS = 'APP_FETCHED_DEALS';
+export const APP_FETCHED_BUYER = 'APP_FETCHED_BUYER';
 
 export const OFFER_ADD_TO_ORDER = 'OFFER_ADD_TO_ORDER';
 
@@ -42,11 +43,19 @@ export const ORDER_CANCEL = 'ORDER_CANCEL';
  */
 export const appUserLoggedInCreator = (user) => {
     return dispatch => {
-        firebase.database().ref(`businesses`).on('value', (snapshot) => {
-            dispatch({type: APP_FETCHED_BUSINESSES, payload: snapshot.val()});
+        if (!user.isAnonymous) {
+            firebase.database().ref(`buyers/${user.uid}`).update({
+                id: user.uid,
+                name: user.displayName,
+                email: user.email,
+                photo: user.photoURL
+            });
+        }
+        firebase.database().ref(`deals`).on('value', (snapshot) => {
+            dispatch({type: APP_FETCHED_DEALS, payload: snapshot.val()});
         });
-        firebase.database().ref(`users/${user.uid}/orders`).on('value', (snapshot) => {
-            dispatch({type: APP_FETCHED_ORDERS, payload: snapshot.val()});
+        firebase.database().ref(`buyers/${user.uid}`).on('value', (snapshot) => {
+            dispatch({type: APP_FETCHED_BUYER, payload: snapshot.val()});
         });
         dispatch({type: APP_USER_LOGGED_IN, payload: user});
     };
@@ -169,15 +178,23 @@ export const orderAddMoreOffersCreator = (payload) => ({type: ORDER_ADD_MORE_OFF
 /**
  * User wants to submit the current order.
  */
-export const orderSubmitCreator = (payload) => {
+export const orderSubmitCreator = ({buyer, order}) => {
     return dispatch => {
-        let {user, order} = payload;
-        console.log('####################', user);
-        let newOrderRef = firebase.database().ref(`users/${user.uid}/orders`).push();
-        newOrderRef.set({
-            businessId: order.business.id
+        let buyerId = buyer.id;
+        let sellerId = order.deal.seller.id;
+        let orderId = firebase.database().ref().push().key;
+        firebase.database().ref().update({
+            [`/buyers/${buyerId}/orders/${orderId}`]: {
+                items: order.items,
+                seller: R.pick(['id', 'name', 'address', 'latitude', 'longitude'], order.deal.seller)
+            },
+            [`/sellers/${sellerId}/orders/${orderId}`]: {
+                items: order.items,
+                buyer: R.pick(['id', 'name', 'email', 'photo'], buyer)
+            }
+        }).then(() => {
+            dispatch({type: ORDER_SUBMIT, payload: {buyer, order}});
         });
-        dispatch({type: ORDER_SUBMIT, payload: payload});
     };
 };
 

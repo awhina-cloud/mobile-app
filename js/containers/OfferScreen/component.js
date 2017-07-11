@@ -38,24 +38,36 @@ class OffersScreen extends Component {
 
     constructor(props) {
         super(props);
+        let {offer} = this.props.navigation.state.params;
+        this.state = {
+            item: {
+                title: offer.title,
+                description: offer.description,
+                image: offer.image,
+                variation: offer.variations[0],
+                extras: [] // todo min max to count
+            }
+        }
     }
 
     render() {
-        let {onAddToOrder, order, navigation} = this.props;
-        let {offer} = navigation.state.params;
+        let {onAddToOrder, navigation} = this.props;
+        let {deal, offer} = navigation.state.params;
         return (
             <View style={styles.container}>
-                <Text style={styles.name}>{offer.name}</Text>
+                <Text style={styles.title}>{offer.title}</Text>
+                <Text style={styles.description}>{offer.description}</Text>
                 <Text style={styles.variations}>Variations</Text>
                 {offer.variations.map(variaton => (
-                    <Text style={styles.variation} key={variaton.id}>{variaton.name} - NZD {variaton.price}</Text>
+                    <Text style={styles.variation} key={variaton.id}>{variaton.title} - NZD {variaton.price}</Text>
                 ))}
                 <Text style={styles.extras}>Extras</Text>
                 {offer.extras.map(extra => (
-                    <Text style={styles.extra} key={extra.id}>{extra.name} - NZD {extra.price}</Text>
+                    <Text style={styles.extra} key={extra.id}>{extra.title} - NZD {extra.price}</Text>
                 ))}
                 <View style={styles.addButton}>
-                    <Button onPress={() => onAddToOrder(navigation.state.params)} color="#3b5998" title="Add to order"/>
+                    <Button onPress={() => onAddToOrder({deal, item: this.state.item})} color="#3b5998"
+                            title="Add to order"/>
                 </View>
             </View>
         );
@@ -66,9 +78,7 @@ class OffersScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
-    return {
-        order: app.order
-    };
+    return {};
 };
 
 /**
@@ -76,7 +86,7 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onAddToOrder: (params) => dispatch(offerAddToOrderCreator(params))
+        onAddToOrder: (payload) => dispatch(offerAddToOrderCreator(payload))
     }
 };
 

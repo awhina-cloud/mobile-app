@@ -30,8 +30,8 @@ import {
     OFFER_ADD_TO_ORDER,
     LOCATION_CHANGED,
     LOCATION_ERROR,
-    APP_FETCHED_BUSINESSES,
-    APP_FETCHED_ORDERS,
+    APP_FETCHED_DEALS,
+    APP_FETCHED_BUYER,
     ORDER_ADD_MORE_OFFERS,
     ORDER_SUBMIT,
     ORDER_CANCEL
@@ -43,8 +43,8 @@ import {
 const initialAppState = {
     user: null,
     location: null,
-    businesses: [],
-    orders: [],
+    deals: [],
+    buyer: null,
     order: null
 };
 
@@ -68,10 +68,10 @@ const appReducer = (state = initialAppState, action) => {
             return locationChanged(state, payload);
         case LOCATION_ERROR:
             return locationError(state, payload);
-        case APP_FETCHED_BUSINESSES:
-            return appFetchedBusinesses(state, payload);
-        case APP_FETCHED_ORDERS:
-            return appFetchedOrders(state, payload);
+        case APP_FETCHED_DEALS:
+            return appFetchedDeals(state, payload);
+        case APP_FETCHED_BUYER:
+            return appFetchedBuyer(state, payload);
         default:
             return state;
     }
@@ -94,16 +94,16 @@ function appUserLoggedOut(state) {
 /**
  * Add an offer to the current order.
  */
-function offerAddToOrder(state, {business, offer}) {
+function offerAddToOrder(state, {deal, item}) {
     return R.evolve({
         order: (o) => {
             if (!o) {
                 return {
-                    business,
-                    offers: [offer]
+                    deal,
+                    items: [item]
                 }
             } else {
-                return R.assoc('offers', R.append(offer, o.offers), o);
+                return R.assoc('items', R.append(item, o.items), o);
             }
         }
     }, state);
@@ -127,13 +127,13 @@ function orderCancel(state) {
  * Location has changed action handler.
  */
 function locationChanged(state, location) {
-    // Update location and sort businesses by distance.
+    // Update location and sort deals by distance.
     return R.evolve({
-        businesses: R.compose(
+        deals: R.compose(
             R.sort((a, b) => {
                 return a.distance - b.distance;
             }),
-            R.map(x => R.assoc('distance', haversine(x, location.coords, {unit: 'meter'}), x))
+            R.map(x => R.assoc('distance', haversine(x.seller, location.coords, {unit: 'meter'}), x))
         ),
         location: () => location
     }, state);
@@ -148,39 +148,36 @@ function locationError(state, error) {
 }
 
 /**
- * Fetched businesses action handler.
+ * Fetched deals action handler.
  */
-function appFetchedBusinesses(state, businesses) {
+function appFetchedDeals(state, deals) {
     // Transform firebase objects to arrays.
-    return R.assoc('businesses', objectsToArrays({
-        businesses: {
+    return R.assoc('deals', objectsToArrays({
+        deals: {
             offers: {
                 variations: true,
                 extras: true
             }
         }
     }, {
-        businesses
-    }).businesses, state);
+        deals
+    }).deals, state);
 }
 
 /**
- * Fetched orders action handler.
+ * Fetched buyer action handler.
  */
-function appFetchedOrders(state, orders) {
-    // Transform firebase objects to arrays.
-    return R.assoc('orders', objectsToArrays({
+function appFetchedBuyer(state, buyer) {
+    return R.assoc('buyer', objectsToArrays({
         orders: true
-    }, {
-        orders
-    }).orders, state);
+    }, buyer), state);
 }
 
 /**
  * Create the initial navigation state.
  */
 const initialNavState = AppNavigator.router.getStateForAction(
-    AppNavigator.router.getActionForPathAndParams('Businesses')
+    AppNavigator.router.getActionForPathAndParams('Deals')
 );
 
 /**
@@ -227,16 +224,16 @@ function navUserLoggedIn(state, user) {
 function navOfferAddToOrder(state, params) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Offer') {
-        let businessesOffersState = AppNavigator.router.getStateForAction(
+        let dealsOffersState = AppNavigator.router.getStateForAction(
             NavigationActions.back(),
             state
         );
-        let businessesOffersPathAndParams = AppNavigator.router.getPathAndParamsForState(businessesOffersState);
+        let dealsOffersPathAndParams = AppNavigator.router.getPathAndParamsForState(dealsOffersState);
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.reset({
             index: 0,
             actions: [
                 NavigationActions.navigate({routeName: 'Order', params}),
-                //NavigationActions.navigate({routeName: 'Offers', params: businessesOffersPathAndParams.params})
+                //NavigationActions.navigate({routeName: 'Offers', params: dealsOffersPathAndParams.params})
             ]
         }));
         return nextState;
@@ -247,12 +244,12 @@ function navOfferAddToOrder(state, params) {
 /**
  * User added an offer to the order.
  */
-function navOrderAddMoreOffers(state, business) {
+function navOrderAddMoreOffers(state, deal) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Order') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Offers',
-            params: {business}
+            params: {deal}
         }), state);
         return nextState;
     }
@@ -266,7 +263,7 @@ function navOrderSubmit(state, {user, order}) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Order') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
-            routeName: 'Businesses'
+            routeName: 'Deals'
         }));
         return nextState;
     }
@@ -280,7 +277,7 @@ function navOrderCancel(state) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Order') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
-            routeName: 'Businesses'
+            routeName: 'Deals'
         }));
         return nextState;
     }
