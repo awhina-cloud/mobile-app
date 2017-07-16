@@ -51,7 +51,7 @@ class OrderScreen extends Component {
     }
 
     render() {
-        let {onOrderAddMoreOffers, onOrderSubmitCreator, onOrderCancelCreator, buyer, order} = this.props;
+        let {onOrderAddMoreOffers, onOrderSubmit, onOrderCancel, onNavigateToLoginScreen, buyer, order} = this.props;
         let {dataSource} = this.state;
         console.log('EEEEEEEEEEE', buyer);
         return (
@@ -60,10 +60,15 @@ class OrderScreen extends Component {
                     <Button onPress={() => onOrderAddMoreOffers(order.deal)} color="#3b5998" title="Add more offers"/>
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() => onOrderSubmitCreator(buyer, order)} color="#3b5998" title="Submit order"/>
+                    {buyer &&
+                    <Button onPress={() => onOrderSubmit(buyer, order)} color="#3b5998" title="Submit order"/>
+                    }
+                    {!buyer &&
+                    <Button onPress={() => onNavigateToLoginScreen()} color="#3b5998" title="Login to submit order"/>
+                    }
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() => onOrderCancelCreator()} color="#3b5998" title="Cancel order"/>
+                    <Button onPress={() => onOrderCancel()} color="#3b5998" title="Cancel order"/>
                 </View>
                 <ListView style={styles.container} dataSource={dataSource} renderRow={item => (
                     <View style={styles.row} elevation={2}>
@@ -80,7 +85,6 @@ class OrderScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
-    console.log('@@@@@@@@@@@@@', app.buyer.orders);
     return {
         buyer: app.buyer,
         order: app.order
@@ -93,8 +97,9 @@ const mapStateToProps = ({app}) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onOrderAddMoreOffers: (deal) => dispatch(orderAddMoreOffersCreator(deal)),
-        onOrderSubmitCreator: (buyer, order) => dispatch(orderSubmitCreator({buyer, order})),
-        onOrderCancelCreator: () => dispatch(orderCancelCreator())
+        onOrderSubmit: (buyer, order) => dispatch(orderSubmitCreator({buyer, order})),
+        onOrderCancel: () => dispatch(orderCancelCreator()),
+        onNavigateToLoginScreen: () => dispatch(NavigationActions.navigate({routeName: 'Login'}))
     }
 };
 

@@ -52,10 +52,10 @@ const store = createStore(reducer, composeWithDevTools(
  */
 try {
     GoogleSignIn.configure({
-        clientID: '214337708418-ln8d7vji3v6k1aciiqno9a4thcjh3ucv.apps.googleusercontent.com',
+        clientID: '784585203160-smsee6bh48h3k2ru72epf20pelosilv7.apps.googleusercontent.com', //__DEV__ ? '214337708418-ln8d7vji3v6k1aciiqno9a4thcjh3ucv.apps.googleusercontent.com' :
         scopes: ['openid', 'email', 'profile'],
         shouldFetchBasicProfile: true,
-    });
+    }).catch(ex => console.log('GoogleSignIn.configure error', ex));
 } catch (ex) {
     console.log('GoogleSignIn.configure error', ex);
 }

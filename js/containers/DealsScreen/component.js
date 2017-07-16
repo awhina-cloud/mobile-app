@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, ListView, TouchableHighlight, Button} from 'react-native';
+import {StyleSheet, Text, View, ListView, TouchableHighlight, Button, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
 
@@ -64,6 +64,10 @@ class DealsScreen extends Component {
                 <ListView style={styles.container} dataSource={dataSource} renderRow={deal => (
                     <TouchableHighlight onPress={() => onNavigateToOffersScreen(deal)}>
                         <View style={styles.row} elevation={2}>
+                            <Image
+                                style={{width: 50, height: 50}}
+                                source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+                            />
                             <Text style={styles.dealTitle}>{deal.title}</Text>
                             <Text style={styles.dealDescription}>{deal.description}</Text>
                         </View>

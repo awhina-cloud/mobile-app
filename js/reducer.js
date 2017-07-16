@@ -45,7 +45,8 @@ const initialAppState = {
     location: null,
     deals: [],
     buyer: null,
-    order: null
+    order: null,
+    error: null
 };
 
 /**
@@ -72,6 +73,8 @@ const appReducer = (state = initialAppState, action) => {
             return appFetchedDeals(state, payload);
         case APP_FETCHED_BUYER:
             return appFetchedBuyer(state, payload);
+        case 'ERROR':
+            return R.assoc('error', payload, state);
         default:
             return state;
     }
@@ -207,7 +210,7 @@ const navReducer = (state = initialNavState, action) => {
  * User logged in action handler.
  */
 function navUserLoggedIn(state, user) {
-    // If we are on the login screen, redirect to the home screen.
+    // If we are on the login screen navigate back to the previous screen.
     if (AppNavigator.router.getPathAndParamsForState(state).path === 'Login') {
         return AppNavigator.router.getStateForAction(
             NavigationActions.back(),
@@ -224,11 +227,11 @@ function navUserLoggedIn(state, user) {
 function navOfferAddToOrder(state, params) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Offer') {
-        let dealsOffersState = AppNavigator.router.getStateForAction(
-            NavigationActions.back(),
-            state
-        );
-        let dealsOffersPathAndParams = AppNavigator.router.getPathAndParamsForState(dealsOffersState);
+        // let dealsOffersState = AppNavigator.router.getStateForAction(
+        //     NavigationActions.back(),
+        //     state
+        // );
+        // let dealsOffersPathAndParams = AppNavigator.router.getPathAndParamsForState(dealsOffersState);
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.reset({
             index: 0,
             actions: [

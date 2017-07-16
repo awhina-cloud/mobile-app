@@ -127,17 +127,23 @@ export const appUserLoginFacebookCreator = () => {
             FBLoginManager.loginWithPermissions(["email"], function (error, data) {
                 if (!error) {
                     const credential = firebase.auth.FacebookAuthProvider.credential(data.credentials.token);
-                    const firebaseUser = firebase.auth().signInWithCredential(credential);
+                    const firebaseUser = firebase.auth().signInWithCredential(credential).catch(ex => {
+                        dispatch({type: 'ERROR', payload: JSON.stringify(ex, null, 2)});
+                        console.log('signInWithCredential', ex);
+                    });
                     if (firebaseUser === 'cancelled') {
+                        dispatch({type: 'ERROR', payload: `firebaseUser === 'cancelled'`});
                         console.log('firebaseAuthFacebookLogin: Login cancelled');
                     } else {
                         console.log('firebaseAuthFacebookLogin: ' + JSON.stringify(firebaseUser));
                     }
                 } else {
+                    dispatch({type: 'ERROR', payload: JSON.stringify(error, null, 2)});
                     console.log("firebaseAuthFacebookLogin Error: ", error);
                 }
             })
         } catch (ex) {
+            dispatch({type: 'ERROR', payload: JSON.stringify(ex, null, 2)});
             console.log('firebaseAuthFacebookLogin', ex);
         }
     };
@@ -152,14 +158,22 @@ export const appUserLoginGoogleCreator = () => {
             GoogleSignIn.signInPromise()
                 .then(googleUser => {
                     const credential = firebase.auth.GoogleAuthProvider.credential(googleUser.idToken, googleUser.accessToken);
-                    const firebaseUser = firebase.auth().signInWithCredential(credential);
+                    const firebaseUser = firebase.auth().signInWithCredential(credential).catch(ex => {
+                        dispatch({type: 'ERROR', payload: JSON.stringify(ex, null, 2)});
+                        console.log('signInWithCredential', ex);
+                    });
                     if (firebaseUser === 'cancelled') {
+                        dispatch({type: 'ERROR', payload: `firebaseUser === 'cancelled'`});
                         console.log('firebaseAuthGoogleLogin: Login cancelled');
                     } else {
                         console.log('firebaseAuthGoogleLogin: ' + JSON.stringify(firebaseUser));
                     }
-                }).catch(ex => console.log('google signin error', ex));
+                }).catch(ex => {
+                dispatch({type: 'ERROR', payload: JSON.stringify(ex, null, 2)});
+                console.log('google signin error', ex);
+            });
         } catch (ex) {
+            dispatch({type: 'ERROR', payload: JSON.stringify(ex, null, 2)});
             console.log('firebaseAuthGoogleLogin', ex);
         }
     };

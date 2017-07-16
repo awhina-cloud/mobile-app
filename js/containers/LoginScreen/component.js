@@ -34,7 +34,7 @@ class LoginScreen extends Component {
     };
 
     render() {
-        let {onUserLoginFacebook, onUserLoginGoogle} = this.props;
+        let {onUserLoginFacebook, onUserLoginGoogle, error} = this.props;
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>{`Please login to proceed`}</Text>
@@ -44,6 +44,9 @@ class LoginScreen extends Component {
                 <View style={styles.google}>
                     <Button onPress={() => onUserLoginGoogle()} color="#dd4b39" title="Login with Google"/>
                 </View>
+                {error &&
+                <Text>Error: {error}</Text>
+                }
             </View>
         );
     }
@@ -53,7 +56,9 @@ class LoginScreen extends Component {
  * Map state to component properties.
  */
 const mapStateToProps = ({app}) => {
-    return {}
+    return {
+        error: app.error
+    }
 };
 
 /**

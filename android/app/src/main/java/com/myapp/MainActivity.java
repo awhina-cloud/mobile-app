@@ -1,4 +1,4 @@
-package com.myapp;
+package com.nearbydeals.android;
 
 import com.facebook.react.ReactActivity;
 
