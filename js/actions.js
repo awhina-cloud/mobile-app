@@ -194,21 +194,15 @@ export const orderAddMoreOffersCreator = (payload) => ({type: ORDER_ADD_MORE_OFF
  */
 export const orderSubmitCreator = ({buyer, order}) => {
     return dispatch => {
-        let buyerId = buyer.id;
-        let sellerId = order.deal.seller.id;
-        let orderId = firebase.database().ref().push().key;
-        firebase.database().ref().update({
-            [`/buyers/${buyerId}/orders/${orderId}`]: {
-                items: order.items,
-                seller: R.pick(['id', 'name', 'address', 'latitude', 'longitude'], order.deal.seller)
-            },
-            [`/sellers/${sellerId}/orders/${orderId}`]: {
-                items: order.items,
-                buyer: R.pick(['id', 'name', 'email', 'photo'], buyer)
-            }
+        // Submit the new order.
+        firebase.database().ref(`/commands/${firebase.auth().currentUser.uid}`).push({
+            command: 'submitOrder',
+            order: order,
+            buyer: buyer
         }).then(() => {
             dispatch({type: ORDER_SUBMIT, payload: {buyer, order}});
         });
+        // TODO .catch ORDER_SUBMIT_FAILED
     };
 };
 
