@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, ListView, TouchableHighlight} from 'react-native';
+import {StyleSheet, Text, View, ListView, TouchableHighlight, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
 
@@ -30,9 +30,10 @@ import styles from './styles';
 class OffersScreen extends Component {
 
     static navigationOptions = {
-        title: 'Offers',
-        headerTintColor: 'white',
-        headerStyle: {backgroundColor: '#303050'}
+        //title: 'Offers',
+        //headerTintColor: 'rgba(255,255,255,255)',
+        //headerStyle: {backgroundColor: 'rgba(0,0,0,0)'}
+        header: null
     };
 
     constructor(props) {
@@ -49,18 +50,56 @@ class OffersScreen extends Component {
         this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.navigation.state.params.deal.offers)});
     }
 
+    renderPrice = (variations) => {
+        let variation = variations.find(v => v.default);
+        let originalPrice = variation.originalPrice ? variation.originalPrice.toFixed(2) : null;
+        let discountPrice = variation.discountPrice ? variation.discountPrice.toFixed(2) : null;
+        return (
+            <View style={styles.offerPrices}>
+                {originalPrice &&
+                <Text style={styles.currencySymbol}>$</Text>
+                }
+                {originalPrice &&
+                <Text style={styles.offerOriginalPrice}>{originalPrice}</Text>
+                }
+                <Text style={styles.currencySymbol}>$</Text>
+                <Text style={styles.offerDiscountedPrice}>{discountPrice}</Text>
+            </View>
+        );
+    };
+
     render() {
         let {onNavigateToOfferScreen, navigation} = this.props;
         let {dataSource} = this.state;
+        let {deal} = navigation.state.params;
         return (
-            <ListView style={styles.container} dataSource={dataSource} renderRow={offer => (
-                <TouchableHighlight onPress={() => onNavigateToOfferScreen({deal: navigation.state.params.deal, offer})}>
-                    <View style={styles.row} elevation={2}>
-                        <Text style={styles.offerTitle}>{offer.title}</Text>
-                        <Text style={styles.offerDescription}>{offer.description}</Text>
-                    </View>
-                </TouchableHighlight>
-            )}/>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Image
+                        style={styles.backdrop}
+                        source={{uri: deal.image}}>
+                        <View style={styles.backdropView}>
+                            <Text style={styles.title1}>{deal.title1}</Text>
+                            <Text style={styles.title2}>{deal.title2}</Text>
+                            <Text style={styles.title3}>{deal.title3}</Text>
+                            {!isNaN(deal.distance) &&
+                            <Text
+                                style={styles.distance}>{deal.distance > 1000 ? `${(deal.distance / 1000).toFixed(2)}km` : `${deal.distance}m`}</Text>
+                            }
+                        </View>
+                    </Image>
+                </View>
+                <Text style={styles.description}>{deal.description}</Text>
+                <ListView style={styles.list} dataSource={dataSource} renderRow={offer => (
+                    <TouchableHighlight
+                        onPress={() => onNavigateToOfferScreen({deal: navigation.state.params.deal, offer})}>
+                        <View style={styles.row} elevation={2}>
+                            <Text style={styles.offerTitle}>{offer.title}</Text>
+                            {this.renderPrice(offer.variations)}
+                        </View>
+                    </TouchableHighlight>
+                )}/>
+            </View>
         );
     }
 }

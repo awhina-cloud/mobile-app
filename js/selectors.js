@@ -67,7 +67,7 @@ export const objectsToArrays = (transformations, obj) => {
         return obj;
     }
     R.forEachObjIndexed((value, key) => {
-        obj[key] = objectToArray(obj[key]);
+        obj[key] = R.sortBy(R.prop('id'), objectToArray(obj[key]));
         obj[key] = R.map(p => objectsToArrays(value, p), obj[key]);
     }, transformations);
     return obj;

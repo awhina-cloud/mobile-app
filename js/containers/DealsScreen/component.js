@@ -30,9 +30,7 @@ import styles from './styles';
 class DealsScreen extends Component {
 
     static navigationOptions = {
-        title: 'Deals',
-        headerTintColor: 'white',
-        headerStyle: {backgroundColor: '#303050'}
+        header: null
     };
 
     constructor(props) {
@@ -54,22 +52,21 @@ class DealsScreen extends Component {
         let {dataSource} = this.state;
         return (
             <View style={styles.container}>
-                {
-                    orders.length > 0 &&
-                    <View style={styles.button}>
-                        <Button onPress={() => console.log('PRESSED')} color="#3b5998"
-                                title={`${orders.length} Orders in progress.`}/>
-                    </View>
-                }
-                <ListView style={styles.container} dataSource={dataSource} renderRow={deal => (
+                <ListView style={styles.list} dataSource={dataSource} renderRow={deal => (
                     <TouchableHighlight onPress={() => onNavigateToOffersScreen(deal)}>
-                        <View style={styles.row} elevation={2}>
+                        <View style={styles.row}>
                             <Image
-                                style={{width: 50, height: 50}}
-                                source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
-                            />
-                            <Text style={styles.dealTitle}>{deal.title}</Text>
-                            <Text style={styles.dealDescription}>{deal.description}</Text>
+                                style={styles.backdrop}
+                                source={{uri: deal.image}}>
+                                <View style={styles.backdropView}>
+                                    <Text style={styles.title1}>{deal.title1}</Text>
+                                    <Text style={styles.title2}>{deal.title2}</Text>
+                                    <Text style={styles.title3}>{deal.title3}</Text>
+                                    {!isNaN(deal.distance) &&
+                                    <Text style={styles.distance}>{deal.distance > 1000 ? `${(deal.distance / 1000).toFixed(2)}km` : `${deal.distance}m`}</Text>
+                                    }
+                                </View>
+                            </Image>
                         </View>
                     </TouchableHighlight>
                 )}/>

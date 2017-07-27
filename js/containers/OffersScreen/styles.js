@@ -18,21 +18,132 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#e0e0ff'
+        backgroundColor: 'rgba(0,0,0,255)',
+    },
+
+    header: {
+        width: '100%',
+        height: 200
+    },
+    backdrop: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        height: null,
+        width: null,
+        resizeMode: 'cover'
+    },
+    backdropView: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0)',
+        padding: 10
+    },
+    title1: {
+        fontSize: 20,
+        fontWeight: '100',
+        backgroundColor: 'rgba(0,0,0,0)',
+        color: 'white',
+        textShadowColor: 'rgba(0,0,0,255)',
+        textShadowRadius: 10,
+        textShadowOffset: {
+            width: 1,
+            height: 1
+
+        }
+    },
+    title2: {
+        fontSize: 40,
+        fontWeight: '700',
+        backgroundColor: 'rgba(0,0,0,0)',
+        color: 'white',
+        textShadowColor: 'rgba(0,0,0,255)',
+        textShadowRadius: 10,
+        textShadowOffset: {
+            width: 1,
+            height: 1
+
+        }
+    },
+    title3: {
+        fontSize: 20,
+        fontWeight: '700',
+        backgroundColor: 'rgba(0,0,0,0)',
+        color: 'white',
+        textShadowColor: 'rgba(0,0,0,255)',
+        textShadowRadius: 10,
+        textShadowOffset: {
+            width: 1,
+            height: 1
+
+        }
+    },
+    distance: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+        fontSize: 20,
+        fontWeight: '100',
+        backgroundColor: 'rgba(0,0,0,0)',
+        color: 'white',
+        textShadowColor: 'rgba(0,0,0,255)',
+        textShadowRadius: 10,
+        textShadowOffset: {
+            width: 1,
+            height: 1
+
+        }
+    },
+
+    description: {
+        margin: 10,
+        fontSize: 15,
+        fontWeight: '100',
+        backgroundColor: 'rgba(0,0,0,0)',
+        color: 'white',
+        textAlign: 'justify'
+    },
+
+
+    list: {
+        flex: 1,
+        borderTopColor: '#888888',
+        borderTopWidth: 1
     },
     row: {
-        marginTop: 10,
-        marginLeft: 10,
-        marginRight: 10,
-        padding: 40,
-        borderRadius: 5,
-        backgroundColor: '#ffffff'
+        padding: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomColor: '#888888',
+        borderBottomWidth: 1
     },
     offerTitle: {
         fontSize: 20,
-        color: '#000000'
+        fontWeight: '600',
+        color: '#ffffff'
     },
-    offerDescription: {
-        color: '#000000'
-    }
+    offerPrices: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    offerOriginalPrice: {
+        fontSize: 25,
+        fontWeight: '100',
+        textDecorationLine :'line-through',
+        color: '#888888',
+        marginRight: 10
+    },
+    offerDiscountedPrice: {
+        fontSize: 25,
+        fontWeight: '100',
+        color: '#ffffff'
+    },
+    currencySymbol: {
+        fontSize: 15,
+        fontWeight: '100',
+        color: '#888888',
+        marginRight: 5,
+        alignSelf: 'flex-start'
+    },
 });

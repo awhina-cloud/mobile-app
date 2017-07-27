@@ -11,9 +11,20 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, ListView, TouchableHighlight, Button} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+    ListView,
+    TouchableHighlight,
+    Button,
+    Switch,
+    ScrollView
+} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
+import R from 'ramda';
 
 /**
  * Import local dependencies.
@@ -31,9 +42,7 @@ import {offerAddToOrderCreator} from '../../actions';
 class OffersScreen extends Component {
 
     static navigationOptions = {
-        title: 'Offer',
-        headerTintColor: 'white',
-        headerStyle: {backgroundColor: '#303050'}
+        header: null
     };
 
     constructor(props) {
@@ -46,28 +55,137 @@ class OffersScreen extends Component {
                 image: offer.image,
                 variation: offer.variations[0],
                 extras: [] // todo min max to count
-            }
+            },
+            extras: R.map(R.assoc('count', 0 /*defaultCount*/), offer.extras),
+            selectedVariation: offer.variations.findIndex(v => v.default)
         }
     }
 
     render() {
         let {onAddToOrder, navigation} = this.props;
         let {deal, offer} = navigation.state.params;
+        let selectedVariation = offer.variations[this.state.selectedVariation];
+        let totals = this.state.extras.reduce((totals, extra) => {
+            totals.originalPrice += extra.count * (extra.originalPrice ? extra.originalPrice : extra.discountPrice ? extra.discountPrice : 0);
+            totals.discountPrice += extra.count * (extra.discountPrice ? extra.discountPrice : 0);
+            return totals;
+        }, {
+            originalPrice: selectedVariation.originalPrice ? selectedVariation.originalPrice : selectedVariation.discountPrice ? selectedVariation.discountPrice : 0,
+            discountPrice: selectedVariation.discountPrice ? selectedVariation.discountPrice : 0
+        });
+        let originalTotalPrice = totals.originalPrice > totals.discountPrice ? totals.originalPrice.toFixed(2) : null;
+        let discountTotalPrice = totals.discountPrice.toFixed(2);
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>{offer.title}</Text>
-                <Text style={styles.description}>{offer.description}</Text>
-                <Text style={styles.variations}>Variations</Text>
-                {offer.variations.map(variaton => (
-                    <Text style={styles.variation} key={variaton.id}>{variaton.title} - NZD {variaton.price}</Text>
-                ))}
-                <Text style={styles.extras}>Extras</Text>
-                {offer.extras.map(extra => (
-                    <Text style={styles.extra} key={extra.id}>{extra.title} - NZD {extra.price}</Text>
-                ))}
-                <View style={styles.addButton}>
-                    <Button onPress={() => onAddToOrder({deal, item: this.state.item})} color="#3b5998"
-                            title="Add to order"/>
+                <View style={styles.header}>
+                    <Text style={styles.offerTitle}>{offer.title}</Text>
+                    <View style={styles.offerPrices}>
+                        {originalTotalPrice &&
+                        <Text style={styles.currencySymbol}>$</Text>
+                        }
+                        {originalTotalPrice &&
+                        <Text style={styles.offerOriginalPrice}>{originalTotalPrice}</Text>
+                        }
+                        {discountTotalPrice &&
+                        <Text style={styles.currencySymbol}>$</Text>
+                        }
+                        {discountTotalPrice &&
+                        <Text style={styles.offerDiscountedPrice}>{discountTotalPrice}</Text>
+                        }
+                    </View>
+                </View>
+                <ScrollView styles={styles.content}>
+                    <View style={styles.offerVariations}>
+                        <Text style={styles.offerVariationsTitle}>{offer.variationsTitle}</Text>
+                        {offer.variations.map((variation, index) => {
+                            let originalPrice = variation.originalPrice ? variation.originalPrice.toFixed(2) : null;
+                            let discountPrice = variation.discountPrice ? variation.discountPrice.toFixed(2) : null;
+                            return (
+                                <View style={styles.offerVariation}>
+                                    <Text style={styles.offerVariationTitle} key={variation.id}>{variation.title}</Text>
+                                    <View style={styles.offerVariationPrices}>
+                                        {originalPrice &&
+                                        <Text style={styles.currencySymbol}>$</Text>
+                                        }
+                                        {originalPrice &&
+                                        <Text style={styles.offerVariationOriginalPrice}>{originalPrice}</Text>
+                                        }
+                                        {discountPrice &&
+                                        <Text style={styles.currencySymbol}>$</Text>
+                                        }
+                                        {discountPrice &&
+                                        <Text style={styles.offerVariationDiscountedPrice}>{discountPrice}</Text>
+                                        }
+                                        <Switch style={styles.offerVariationSwitch}
+                                                tintColor="#444444" onTintColor="#888888"
+                                                thumbTintColor={index === this.state.selectedVariation ? "#00ea8d" : "#aaaaaa"}
+                                                onValueChange={value => {
+                                                    if (value) {
+                                                        this.setState({selectedVariation: index})
+                                                    }
+                                                }}
+                                                value={index === this.state.selectedVariation}/>
+                                    </View>
+                                </View>
+                            );
+                        })}
+                    </View>
+                    <View style={styles.offerExtras}>
+                        <Text style={styles.offerExtrasTitle}>{offer.extrasTitle}</Text>
+                        {offer.extras.map(extra => {
+                            let originalPrice = extra.originalPrice ? extra.originalPrice.toFixed(2) : null;
+                            let discountPrice = extra.discountPrice ? extra.discountPrice.toFixed(2) : null;
+                            return (
+                                <View style={styles.offerExtra}>
+                                    <Text style={styles.offerExtraTitle} key={extra.id}>{extra.title}</Text>
+                                    <View style={styles.offerExtraPrices}>
+                                        {originalPrice &&
+                                        <Text style={styles.currencySymbol}>$</Text>
+                                        }
+                                        {originalPrice &&
+                                        <Text style={styles.offerExtraOriginalPrice}>{originalPrice}</Text>
+                                        }
+                                        {discountPrice &&
+                                        <Text style={styles.currencySymbol}>$</Text>
+                                        }
+                                        {discountPrice &&
+                                        <Text style={styles.offerExtraDiscountedPrice}>{discountPrice}</Text>
+                                        }
+                                        {extra.max === 1 &&
+                                        <Switch style={styles.offerExtraSwitch}
+                                                tintColor="#444444" onTintColor="#888888"
+                                                thumbTintColor={this.state.extras.find(x => x.id === extra.id).count === 1 ? "#00ea8d" : "#aaaaaa"}
+                                                onValueChange={value => {
+                                                    this.state.extras.find(x => x.id === extra.id).count = value ? 1 : 0;
+                                                    this.setState({extras: this.state.extras})
+                                                }}
+                                                value={this.state.extras.find(x => x.id === extra.id).count === 1}/>
+                                        }
+                                        {extra.max > 1 &&
+                                        <TextInput
+                                            style={styles.offerExtraCount}
+                                            keyboardType='numeric'
+                                            onChangeText={value => {
+                                                this.state.extras.find(x => x.id === extra.id).count = value.length === 0 || isNaN(value) ? 0 : parseInt(value);
+                                                this.setState({extras: this.state.extras})
+                                            }}
+                                            value={this.state.extras.find(x => x.id === extra.id).count.toString()}/>
+                                        }
+                                    </View>
+                                </View>
+                            );
+                        })}
+                    </View>
+                </ScrollView>
+                <View style={styles.footer}>
+                    <TouchableHighlight style={styles.addMoreButton} onPress={() => {
+                    }}>
+                        <Text style={styles.addMoreText}>ADD MORE</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight style={styles.doneButton} onPress={() => {
+                    }}>
+                        <Text style={styles.doneText}>DONE</Text>
+                    </TouchableHighlight>
                 </View>
             </View>
         );

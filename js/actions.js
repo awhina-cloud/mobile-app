@@ -23,6 +23,8 @@ import firebase from './firebase';
 /**
  * Export action types.
  */
+export const HARDWARE_BACK_PRESS = 'HARDWARE_BACK_PRESS';
+
 export const APP_USER_LOGGED_IN = 'APP_USER_LOGGED_IN';
 export const APP_USER_LOGGED_OUT = 'APP_USER_LOGGED_OUT';
 
@@ -37,6 +39,11 @@ export const OFFER_ADD_TO_ORDER = 'OFFER_ADD_TO_ORDER';
 export const ORDER_ADD_MORE_OFFERS = 'ORDER_ADD_MORE_OFFERS';
 export const ORDER_SUBMIT = 'ORDER_SUBMIT';
 export const ORDER_CANCEL = 'ORDER_CANCEL';
+
+/**
+ * The Android hardware back button has been pressed.
+ */
+export const hardwareBackPressCreator = () => ({type: HARDWARE_BACK_PRESS});
 
 /**
  * User has logged in action.

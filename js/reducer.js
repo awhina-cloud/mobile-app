@@ -10,6 +10,7 @@
 /**
  * Import dependencies.
  */
+import {BackHandler} from 'react-native';
 import {combineReducers} from 'redux';
 import {NavigationActions} from 'react-navigation';
 import R from 'ramda';
@@ -25,6 +26,7 @@ import {objectsToArrays, haversine} from './selectors';
  * Import actions.
  */
 import {
+    HARDWARE_BACK_PRESS,
     APP_USER_LOGGED_IN,
     APP_USER_LOGGED_OUT,
     OFFER_ADD_TO_ORDER,
@@ -189,6 +191,8 @@ const initialNavState = AppNavigator.router.getStateForAction(
 const navReducer = (state = initialNavState, action) => {
     let {type, payload} = action;
     switch (type) {
+        case HARDWARE_BACK_PRESS:
+            return navHardwareBackPress(state);
         case APP_USER_LOGGED_IN:
             return navUserLoggedIn(state, payload);
         case OFFER_ADD_TO_ORDER:
@@ -205,6 +209,22 @@ const navReducer = (state = initialNavState, action) => {
     // Simply return the original `state` if `nextState` is null or undefined.
     return nextState || state;
 };
+
+/**
+ * User logged in action handler.
+ */
+function navHardwareBackPress(state) {
+    // If we are on the not on the deals screen navigate back to the previous screen.
+    if (AppNavigator.router.getPathAndParamsForState(state).path !== 'Deals') {
+        return AppNavigator.router.getStateForAction(
+            NavigationActions.back(),
+            state
+        );
+    } else {
+        BackHandler.exitApp();
+        return state;
+    }
+}
 
 /**
  * User logged in action handler.

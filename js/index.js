@@ -11,7 +11,7 @@
  * Import dependencies.
  */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight, Platform, StatusBar} from 'react-native';
+import {StyleSheet, Text, View, TouchableHighlight, Platform, StatusBar, BackHandler} from 'react-native';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
@@ -29,6 +29,7 @@ import AppNavigator from './containers/AppNavigator/component';
  * Import actions.
  */
 import {
+    hardwareBackPressCreator,
     appUserLoggedInCreator,
     appUserLoggedOutCreator,
     locationChangedCreator,
@@ -47,6 +48,15 @@ const store = createStore(reducer, composeWithDevTools(
     applyMiddleware(thunk),
     // other store enhancers if any
 ));
+
+/**
+ * Handle the Android back button.
+ */
+BackHandler.addEventListener('hardwareBackPress', () => {
+    store.dispatch(hardwareBackPressCreator());
+    return true;
+});
+
 /**
  * Initialize Google Authentication.
  */
@@ -64,7 +74,7 @@ try {
  * Style the phones status bar.
  */
 StatusBar.setBarStyle('light-content');
-StatusBar.setBackgroundColor('#303050');
+StatusBar.setBackgroundColor('rgba(0,0,0,255)');
 
 /**
  * Export the component.
