@@ -34,7 +34,7 @@ import styles from './styles';
 /**
  * Import actions.
  */
-import {offerAddToOrderCreator} from '../../actions';
+import {offerAddToOrderAndMoreCreator, offerAddToOrderAndDoneCreator} from '../../actions';
 
 /**
  * Create the container.
@@ -49,20 +49,13 @@ class OffersScreen extends Component {
         super(props);
         let {offer} = this.props.navigation.state.params;
         this.state = {
-            item: {
-                title: offer.title,
-                description: offer.description,
-                image: offer.image,
-                variation: offer.variations[0],
-                extras: [] // todo min max to count
-            },
             extras: R.map(R.assoc('count', 0 /*defaultCount*/), offer.extras),
             selectedVariation: offer.variations.findIndex(v => v.default)
         }
     }
 
     render() {
-        let {onAddToOrder, navigation} = this.props;
+        let {onAddToOrderAndMore, onAddToOrderAndDone, navigation} = this.props;
         let {deal, offer} = navigation.state.params;
         let selectedVariation = offer.variations[this.state.selectedVariation];
         let totals = this.state.extras.reduce((totals, extra) => {
@@ -178,12 +171,28 @@ class OffersScreen extends Component {
                     </View>
                 </ScrollView>
                 <View style={styles.footer}>
-                    <TouchableHighlight style={styles.addMoreButton} onPress={() => {
-                    }}>
+                    <TouchableHighlight style={styles.addMoreButton} onPress={() => onAddToOrderAndMore({
+                        deal, item: {
+                            title: offer.title,
+                            description: offer.description,
+                            image: offer.image,
+                            variation: selectedVariation,
+                            extras: R.filter(x => x.count > 0, this.state.extras),
+                            total: totals.discountPrice
+                        }
+                    })}>
                         <Text style={styles.addMoreText}>ADD MORE</Text>
                     </TouchableHighlight>
-                    <TouchableHighlight style={styles.doneButton} onPress={() => {
-                    }}>
+                    <TouchableHighlight style={styles.doneButton} onPress={() => onAddToOrderAndDone({
+                        deal, item: {
+                            title: offer.title,
+                            description: offer.description,
+                            image: offer.image,
+                            variation: selectedVariation,
+                            extras: R.filter(x => x.count > 0, this.state.extras),
+                            total: totals.discountPrice
+                        }
+                    })}>
                         <Text style={styles.doneText}>DONE</Text>
                     </TouchableHighlight>
                 </View>
@@ -204,7 +213,8 @@ const mapStateToProps = ({app}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onAddToOrder: (payload) => dispatch(offerAddToOrderCreator(payload))
+        onAddToOrderAndMore: (payload) => dispatch(offerAddToOrderAndMoreCreator(payload)),
+        onAddToOrderAndDone: (payload) => dispatch(offerAddToOrderAndDoneCreator(payload))
     }
 };
 

@@ -81,13 +81,13 @@ class OrderScreen extends Component {
     }
 }
 
-/**
+/** this.props.navigation.state.params
  * Map state to component properties.
  */
-const mapStateToProps = ({app}) => {
+const mapStateToProps = ({app}, {navigation}) => {
     return {
         buyer: app.buyer,
-        order: app.order
+        order: app.orders[navigation.state.params.deal.id]
     };
 };
 

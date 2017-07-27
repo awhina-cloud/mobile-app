@@ -34,9 +34,9 @@ export const LOCATION_ERROR = 'LOCATION_ERROR';
 export const APP_FETCHED_DEALS = 'APP_FETCHED_DEALS';
 export const APP_FETCHED_BUYER = 'APP_FETCHED_BUYER';
 
-export const OFFER_ADD_TO_ORDER = 'OFFER_ADD_TO_ORDER';
+export const OFFER_ADD_TO_ORDER_AND_MORE = 'OFFER_ADD_TO_ORDER_AND_MORE';
+export const OFFER_ADD_TO_ORDER_AND_DONE = 'OFFER_ADD_TO_ORDER_AND_DONE';
 
-export const ORDER_ADD_MORE_OFFERS = 'ORDER_ADD_MORE_OFFERS';
 export const ORDER_SUBMIT = 'ORDER_SUBMIT';
 export const ORDER_CANCEL = 'ORDER_CANCEL';
 
@@ -187,14 +187,14 @@ export const appUserLoginGoogleCreator = () => {
 };
 
 /**
- * User is adding an offer to the current order.
+ * User is adding an offer to the current order and wants to add more.
  */
-export const offerAddToOrderCreator = (payload) => ({type: OFFER_ADD_TO_ORDER, payload});
+export const offerAddToOrderAndMoreCreator = (payload) => ({type: OFFER_ADD_TO_ORDER_AND_MORE, payload});
 
 /**
- * User wants to add more offers to the current order.
+ * User is adding an offer to the current order and is done.
  */
-export const orderAddMoreOffersCreator = (payload) => ({type: ORDER_ADD_MORE_OFFERS, payload});
+export const offerAddToOrderAndDoneCreator = (payload) => ({type: OFFER_ADD_TO_ORDER_AND_DONE, payload});
 
 /**
  * User wants to submit the current order.

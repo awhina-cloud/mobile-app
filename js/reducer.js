@@ -29,7 +29,8 @@ import {
     HARDWARE_BACK_PRESS,
     APP_USER_LOGGED_IN,
     APP_USER_LOGGED_OUT,
-    OFFER_ADD_TO_ORDER,
+    OFFER_ADD_TO_ORDER_AND_MORE,
+    OFFER_ADD_TO_ORDER_AND_DONE,
     LOCATION_CHANGED,
     LOCATION_ERROR,
     APP_FETCHED_DEALS,
@@ -47,7 +48,8 @@ const initialAppState = {
     location: null,
     deals: [],
     buyer: null,
-    order: null,
+    order: null, // todo get rid of this
+    orders: {}, // these are drafts basically, max one per deal
     error: null
 };
 
@@ -61,7 +63,9 @@ const appReducer = (state = initialAppState, action) => {
             return appUserLoggedIn(state, payload);
         case APP_USER_LOGGED_OUT:
             return appUserLoggedOut(state);
-        case OFFER_ADD_TO_ORDER:
+        case OFFER_ADD_TO_ORDER_AND_MORE:
+            return offerAddToOrder(state, payload);
+        case OFFER_ADD_TO_ORDER_AND_DONE:
             return offerAddToOrder(state, payload);
         case ORDER_SUBMIT:
             return orderSubmit(state, payload);
@@ -100,18 +104,15 @@ function appUserLoggedOut(state) {
  * Add an offer to the current order.
  */
 function offerAddToOrder(state, {deal, item}) {
+    let newState = state;
+    if(!newState.orders.hasOwnProperty(deal.id)) {
+        newState = R.assocPath(['orders', deal.id], {deal, items: []}, state);
+    }
     return R.evolve({
-        order: (o) => {
-            if (!o) {
-                return {
-                    deal,
-                    items: [item]
-                }
-            } else {
-                return R.assoc('items', R.append(item, o.items), o);
-            }
+        orders: {
+            [`${deal.id}`]: o => R.assoc('items', R.append(item, o.items), o)
         }
-    }, state);
+    }, newState);
 }
 
 /**
@@ -195,8 +196,10 @@ const navReducer = (state = initialNavState, action) => {
             return navHardwareBackPress(state);
         case APP_USER_LOGGED_IN:
             return navUserLoggedIn(state, payload);
-        case OFFER_ADD_TO_ORDER:
-            return navOfferAddToOrder(state, payload);
+        case OFFER_ADD_TO_ORDER_AND_MORE:
+            return navOfferAddToOrderAndMore(state, payload);
+        case OFFER_ADD_TO_ORDER_AND_DONE:
+            return navOfferAddToOrderAndDone(state, payload);
         case ORDER_ADD_MORE_OFFERS:
             return navOrderAddMoreOffers(state, payload);
         case ORDER_SUBMIT:
@@ -244,7 +247,22 @@ function navUserLoggedIn(state, user) {
 /**
  * User added an offer to the order.
  */
-function navOfferAddToOrder(state, params) {
+function navOfferAddToOrderAndMore(state, params) {
+    // If we are on the login screen navigate back to the previous screen.
+    if (AppNavigator.router.getPathAndParamsForState(state).path === 'Offer') {
+        return AppNavigator.router.getStateForAction(
+            NavigationActions.back(),
+            state
+        );
+    } else {
+        return state;
+    }
+}
+
+/**
+ * User added an offer to the order.
+ */
+function navOfferAddToOrderAndDone(state, params) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Offer') {
         // let dealsOffersState = AppNavigator.router.getStateForAction(
@@ -255,7 +273,7 @@ function navOfferAddToOrder(state, params) {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.reset({
             index: 0,
             actions: [
-                NavigationActions.navigate({routeName: 'CreateOrder', params}),
+                NavigationActions.navigate({routeName: 'Order', params}),
                 //NavigationActions.navigate({routeName: 'Offers', params: dealsOffersPathAndParams.params})
             ]
         }));
