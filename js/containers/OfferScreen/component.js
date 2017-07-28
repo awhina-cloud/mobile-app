@@ -94,7 +94,7 @@ class OffersScreen extends Component {
                             let originalPrice = variation.originalPrice ? variation.originalPrice.toFixed(2) : null;
                             let discountPrice = variation.discountPrice ? variation.discountPrice.toFixed(2) : null;
                             return (
-                                <View style={styles.offerVariation}>
+                                <View style={styles.offerVariation} key={variation.id}>
                                     <Text style={styles.offerVariationTitle} key={variation.id}>{variation.title}</Text>
                                     <View style={styles.offerVariationPrices}>
                                         {originalPrice &&
@@ -129,7 +129,7 @@ class OffersScreen extends Component {
                             let originalPrice = extra.originalPrice ? extra.originalPrice.toFixed(2) : null;
                             let discountPrice = extra.discountPrice ? extra.discountPrice.toFixed(2) : null;
                             return (
-                                <View style={styles.offerExtra}>
+                                <View style={styles.offerExtra} key={extra.id}>
                                     <Text style={styles.offerExtraTitle} key={extra.id}>{extra.title}</Text>
                                     <View style={styles.offerExtraPrices}>
                                         {originalPrice &&

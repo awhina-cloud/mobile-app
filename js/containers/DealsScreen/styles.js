@@ -20,6 +20,27 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: 'rgba(0,0,0,255)',
     },
+    order: {
+        backgroundColor: '#008855',
+        flexDirection: 'row',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#000000'
+    },
+    orderLeft: {
+        flex: 1,
+        flexDirection: 'column'
+    },
+    orderTitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#ffffff'
+    },
+    orderStatusText: {
+        fontSize: 10,
+        fontWeight: '100',
+        color: '#ffffff'
+    },
     list: {
         flex: 1
     },

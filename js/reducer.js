@@ -35,7 +35,6 @@ import {
     LOCATION_ERROR,
     APP_FETCHED_DEALS,
     APP_FETCHED_BUYER,
-    ORDER_ADD_MORE_OFFERS,
     ORDER_SUBMIT,
     ORDER_CANCEL
 } from './actions';
@@ -48,7 +47,6 @@ const initialAppState = {
     location: null,
     deals: [],
     buyer: null,
-    order: null, // todo get rid of this
     orders: {}, // these are drafts basically, max one per deal
     error: null
 };
@@ -70,7 +68,7 @@ const appReducer = (state = initialAppState, action) => {
         case ORDER_SUBMIT:
             return orderSubmit(state, payload);
         case ORDER_CANCEL:
-            return orderCancel(state);
+            return orderCancel(state, payload);
         case LOCATION_CHANGED:
             return locationChanged(state, payload);
         case LOCATION_ERROR:
@@ -105,7 +103,7 @@ function appUserLoggedOut(state) {
  */
 function offerAddToOrder(state, {deal, item}) {
     let newState = state;
-    if(!newState.orders.hasOwnProperty(deal.id)) {
+    if (!newState.orders.hasOwnProperty(deal.id)) {
         newState = R.assocPath(['orders', deal.id], {deal, items: []}, state);
     }
     return R.evolve({
@@ -116,17 +114,19 @@ function offerAddToOrder(state, {deal, item}) {
 }
 
 /**
- * Cancel the current order.
+ * Submit the current order.
  */
-function orderSubmit(state) {
-    return R.assoc('order', null, state);
+function orderSubmit(state, {buyer, order}) {
+    // Order has been submitted, so remove the draft.
+    return R.assoc('orders', R.omit([order.deal.id], state.order), state);
 }
 
 /**
  * Cancel the current order.
  */
-function orderCancel(state) {
-    return R.assoc('order', null, state);
+function orderCancel(state, {buyer, order}) {
+    // Order has been cancelled, so remove the draft.
+    return R.assoc('orders', R.omit([order.deal.id], state.order), state);
 }
 
 /**
@@ -200,8 +200,6 @@ const navReducer = (state = initialNavState, action) => {
             return navOfferAddToOrderAndMore(state, payload);
         case OFFER_ADD_TO_ORDER_AND_DONE:
             return navOfferAddToOrderAndDone(state, payload);
-        case ORDER_ADD_MORE_OFFERS:
-            return navOrderAddMoreOffers(state, payload);
         case ORDER_SUBMIT:
             return navOrderSubmit(state, payload);
         case ORDER_CANCEL:
@@ -265,34 +263,16 @@ function navOfferAddToOrderAndMore(state, params) {
 function navOfferAddToOrderAndDone(state, params) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
     if (pathAndParams.path === 'Offer') {
-        // let dealsOffersState = AppNavigator.router.getStateForAction(
-        //     NavigationActions.back(),
-        //     state
-        // );
-        // let dealsOffersPathAndParams = AppNavigator.router.getPathAndParamsForState(dealsOffersState);
-        let nextState = AppNavigator.router.getStateForAction(NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({routeName: 'Order', params}),
-                //NavigationActions.navigate({routeName: 'Offers', params: dealsOffersPathAndParams.params})
-            ]
-        }));
-        return nextState;
-    }
-    return state;
-}
-
-/**
- * User added an offer to the order.
- */
-function navOrderAddMoreOffers(state, deal) {
-    let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'CreateOrder') {
-        let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
-            routeName: 'Offers',
-            params: {deal}
-        }), state);
-        return nextState;
+        // To allow a nice back button flow we first go back to the offers screen.
+        let dealsOffersState = AppNavigator.router.getStateForAction(
+            NavigationActions.back(),
+            state
+        );
+        // And then navigate to the order screen.
+        return AppNavigator.router.getStateForAction(
+            NavigationActions.navigate({routeName: 'Order', params}),
+            dealsOffersState
+        );
     }
     return state;
 }
@@ -302,7 +282,7 @@ function navOrderAddMoreOffers(state, deal) {
  */
 function navOrderSubmit(state, {user, order}) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'CreateOrder') {
+    if (pathAndParams.path === 'Order') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Deals'
         }));
@@ -316,7 +296,7 @@ function navOrderSubmit(state, {user, order}) {
  */
 function navOrderCancel(state) {
     let pathAndParams = AppNavigator.router.getPathAndParamsForState(state);
-    if (pathAndParams.path === 'CreateOrder') {
+    if (pathAndParams.path === 'Order') {
         let nextState = AppNavigator.router.getStateForAction(NavigationActions.navigate({
             routeName: 'Deals'
         }));

@@ -52,6 +52,14 @@ class DealsScreen extends Component {
         let {dataSource} = this.state;
         return (
             <View style={styles.container}>
+                {orders.map(order => (
+                    <View style={styles.order}>
+                        <View style={styles.orderLeft}>
+                            <Text style={styles.orderTitle}>{order.deal.title3}</Text>
+                            <Text style={styles.orderStatusText}>Order accepted</Text>
+                        </View>
+                    </View>
+                ))}
                 <ListView style={styles.list} dataSource={dataSource} renderRow={deal => (
                     <TouchableHighlight onPress={() => onNavigateToOffersScreen(deal)}>
                         <View style={styles.row}>
@@ -63,7 +71,8 @@ class DealsScreen extends Component {
                                     <Text style={styles.title2}>{deal.title2}</Text>
                                     <Text style={styles.title3}>{deal.title3}</Text>
                                     {!isNaN(deal.distance) &&
-                                    <Text style={styles.distance}>{deal.distance > 1000 ? `${(deal.distance / 1000).toFixed(2)}km` : `${deal.distance}m`}</Text>
+                                    <Text
+                                        style={styles.distance}>{deal.distance > 1000 ? `${(deal.distance / 1000).toFixed(2)}km` : `${deal.distance}m`}</Text>
                                     }
                                 </View>
                             </Image>

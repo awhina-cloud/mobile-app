@@ -45,12 +45,17 @@ class OrderScreen extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.order.items)});
+        if (nextProps.order) {
+            this.setState({dataSource: this.dataSource.cloneWithRows(nextProps.order.items)});
+        }
     }
 
     render() {
         let {onOrderSubmit, onOrderCancel, onNavigateToLoginScreen, buyer, order} = this.props;
         let {dataSource} = this.state;
+        if (!order) {
+            return null;
+        }
         let totalAmount = order.items.reduce((total, item) => {
             return total + item.total;
         }, 0);
@@ -88,13 +93,24 @@ class OrderScreen extends Component {
                 />
                 <View style={styles.footer}>
                     <TouchableHighlight style={styles.cancelOrderButton} onPress={() => {
+                        onOrderCancel({buyer, order});
                     }}>
                         <Text style={styles.cancelOrderText}>CANCEL ORDER</Text>
                     </TouchableHighlight>
+                    {buyer &&
                     <TouchableHighlight style={styles.submitOrderButton} onPress={() => {
+                        onOrderSubmit({buyer, order});
                     }}>
                         <Text style={styles.submitOrderText}>SUBMIT ORDER</Text>
                     </TouchableHighlight>
+                    }
+                    {!buyer &&
+                    <TouchableHighlight style={styles.loginBeforeSubmitOrderButton} onPress={() => {
+                        onNavigateToLoginScreen();
+                    }}>
+                        <Text style={styles.loginBeforeSubmitOrderText}>LOGIN</Text>
+                    </TouchableHighlight>
+                    }
                 </View>
             </View>
         );
@@ -116,8 +132,8 @@ const mapStateToProps = ({app}, {navigation}) => {
  */
 const mapDispatchToProps = (dispatch) => {
     return {
-        onOrderSubmit: (buyer, order) => dispatch(orderSubmitCreator({buyer, order})),
-        onOrderCancel: () => dispatch(orderCancelCreator()),
+        onOrderSubmit: (payload) => dispatch(orderSubmitCreator(payload)),
+        onOrderCancel: (payload) => dispatch(orderCancelCreator(payload)),
         onNavigateToLoginScreen: () => dispatch(NavigationActions.navigate({routeName: 'Login'}))
     }
 };

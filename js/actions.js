@@ -208,7 +208,7 @@ export const orderSubmitCreator = ({buyer, order}) => {
             buyer: buyer
         }).then(() => {
             dispatch({type: ORDER_SUBMIT, payload: {buyer, order}});
-        });
+        }).catch(ex => console.log(ex));
         // TODO .catch ORDER_SUBMIT_FAILED
     };
 };
@@ -216,4 +216,4 @@ export const orderSubmitCreator = ({buyer, order}) => {
 /**
  * User is canceling the current order.
  */
-export const orderCancelCreator = () => ({type: ORDER_CANCEL});
+export const orderCancelCreator = (payload) => ({type: ORDER_CANCEL, payload});
