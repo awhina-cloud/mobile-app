@@ -38,6 +38,44 @@ export default StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0)',
         padding: 10
     },
+    shoppingCart: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        position: 'absolute',
+        right: 10,
+        top: 10,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0,0,0,.5)'
+    },
+    shoppingCartActive: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        position: 'absolute',
+        right: 10,
+        top: 10,
+        borderRadius: 20,
+        backgroundColor: '#008855'
+    },
+    shoppingCartView: {
+        height: 40,
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        borderRadius: 20,
+        backgroundColor: 'rgba(0,0,0,0)'
+    },
+    shoppingCartText: {
+        fontSize: 30,
+        fontWeight: '200',
+        color: '#ffffff',
+        marginBottom: 5
+    },
     title1: {
         fontSize: 20,
         fontWeight: '100',
@@ -130,7 +168,7 @@ export default StyleSheet.create({
     offerOriginalPrice: {
         fontSize: 25,
         fontWeight: '100',
-        textDecorationLine :'line-through',
+        textDecorationLine: 'line-through',
         color: '#888888',
         marginRight: 10
     },

@@ -14,6 +14,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, ListView, TouchableHighlight, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 /**
  * Import local dependencies.
@@ -69,7 +70,7 @@ class OffersScreen extends Component {
     };
 
     render() {
-        let {onNavigateToOfferScreen, navigation} = this.props;
+        let {onNavigateToOfferScreen, onNavigateToOrderScreen, navigation, order} = this.props;
         let {dataSource} = this.state;
         let {deal} = navigation.state.params;
         return (
@@ -78,6 +79,17 @@ class OffersScreen extends Component {
                     <Image
                         style={styles.backdrop}
                         source={{uri: deal.image}}>
+                        <TouchableHighlight style={order ? styles.shoppingCartActive : styles.shoppingCart}
+                                            onPress={() => {
+                                                if (order && order.items.length > 0) {
+                                                    onNavigateToOrderScreen({deal: navigation.state.params.deal})
+                                                }
+                                            }}>
+                            <View style={styles.shoppingCartView}>
+                                <Icon name="shopping-cart" size={30} color="#ffffff"/>
+                                <Text style={styles.shoppingCartText}>{order ? order.items.length : 0}</Text>
+                            </View>
+                        </TouchableHighlight>
                         <View style={styles.backdropView}>
                             <Text style={styles.title1}>{deal.title1}</Text>
                             <Text style={styles.title2}>{deal.title2}</Text>
@@ -107,8 +119,10 @@ class OffersScreen extends Component {
 /**
  * Map state to component properties.
  */
-const mapStateToProps = ({app}) => {
-    return {}
+const mapStateToProps = ({app}, {navigation}) => {
+    return {
+        order: app.orders[navigation.state.params.deal.id]
+    }
 };
 
 /**
@@ -118,6 +132,10 @@ const mapDispatchToProps = (dispatch) => {
     return {
         onNavigateToOfferScreen: (params) => dispatch(NavigationActions.navigate({
             routeName: 'Offer',
+            params: params
+        })),
+        onNavigateToOrderScreen: (params) => dispatch(NavigationActions.navigate({
+            routeName: 'Order',
             params: params
         }))
     }

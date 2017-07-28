@@ -151,4 +151,18 @@ export default StyleSheet.create({
         fontWeight: '800',
         color: '#008855',
     },
+    loginBeforeSubmitOrderButton: {
+        flex: 1,
+        justifyContent: 'center',
+        borderRadius: 5,
+        backgroundColor: '#ffffff',
+        margin: 10,
+        padding: 10
+    },
+    loginBeforeSubmitOrderText: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#008855',
+    },
 });

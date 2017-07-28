@@ -14,6 +14,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, ListView, TouchableHighlight, Button, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 /**
  * Import local dependencies.
